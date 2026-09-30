@@ -5,9 +5,9 @@
 
 ## Next step
 
-Before Phase 1: install Docker Desktop and check `pnpm db:start` brings up local Supabase (see Known issues). The festival search question under "Decisions made during the build" can wait until Phase 2.
+Start Phase 1. Local Supabase is up (`pnpm db:start` works with Docker Desktop). The festival search question under "Decisions made during the build" can wait until Phase 2.
 
-Then start Phase 1: migrations for every table in the data model, `can_view` and all RLS policies, activity triggers, seed data for the 3 users, and RLS tests. Pick an RLS test approach first: pgTAP through `supabase test db`, or Vitest against the local API with real signed-in users.
+Phase 1 covers migrations for every table in the data model, `can_view` and all RLS policies, activity triggers, seed data for the 3 users, and RLS tests. Pick an RLS test approach first: pgTAP through `supabase test db`, or Vitest against the local API with real signed-in users.
 
 ## Before building
 
@@ -19,7 +19,7 @@ Then start Phase 1: migrations for every table in the data model, `can_view` and
 ## Phase 0: Setup and setlist.fm spike
 
 - [x] Monorepo scaffolded (pnpm, Turborepo, `apps/web`, `packages/shared`), lint and format set up
-- [x] Supabase project created, env files in place (keys not committed). Local only: `supabase/config.toml` from `supabase init`; `supabase start` not yet run (needs Docker). The hosted project is deferred to Phase 6.
+- [x] Supabase project created, env files in place (keys not committed). Local only: `supabase/config.toml` from `supabase init`, and `pnpm db:start` runs the full stack under Docker Desktop (WSL 2), with Postgres 17.6 and Studio at http://127.0.0.1:54323. The hosted project is deferred to Phase 6.
 - [x] Commands section of `CLAUDE.md` filled in
 - [x] setlist.fm spike script run for: a multi-artist show, a festival day, a small club show, a show that isn't there
 - [x] `docs/setlistfm-notes.md` explains how to find a festival day's full lineup
@@ -91,6 +91,7 @@ Record anything decided that isn't in the spec, with the date.
 - 2026-09-30: Upgraded the dev machine from Node 20.17 (end-of-life) to Node 24.19 LTS, installed with winget from the official nodejs.org installer. The repo requires Node ≥ 24 (`engines`, `.node-version`). This removed the temporary Vite ^6 override, and tests now run on Vitest 5 and Vite 8.
 - 2026-09-30: pnpm 12 blocks dependency build scripts. Only `esbuild` and `supabase` are allowed (`allowBuilds` in `pnpm-workspace.yaml`); `sharp` and `unrs-resolver` are denied.
 - 2026-09-30: `packages/shared` exports TypeScript source directly (no build step). Next 16 transpiles workspace packages automatically.
+- 2026-09-30: Docker Desktop (WSL 2 backend) installed by the user. Local Supabase analytics are turned off in `supabase/config.toml`, because on Windows the `vector` log collector can't reach the Docker daemon and restart-loops. The only cost is Studio's Logs page. We rejected the alternative, exposing the Docker daemon on tcp://localhost:2375 without TLS, as a security downgrade.
 - 2026-09-30: Markdown is excluded from Prettier so the spec and docs keep their hand formatting.
 - 2026-09-30: Env layout: root `.env` for scripts, `apps/web/.env.local` for the web app, `supabase/functions/.env` for Edge Functions. Each has a committed `.env.example`.
 - 2026-09-30: setlist.fm findings that change Phase 2 (details in `docs/setlistfm-notes.md`):
@@ -110,6 +111,7 @@ Record anything decided that isn't in the spec, with the date.
 
 ## Known issues
 
-- Docker Desktop isn't installed, so `pnpm db:start` hasn't been run. It's needed before Phase 1.
+- Studio's Logs page is empty locally because analytics are off (see decisions).
+- The Supabase CLI now issues new-style keys (`sb_publishable_…` / `sb_secret_…`) alongside the legacy anon and service_role JWTs. The env templates still use the `ANON_KEY` / `SERVICE_ROLE_KEY` names. Decide in Phase 1 which the Supabase client should use, and rename the templates if we switch.
 - The setlist.fm rate limit is undocumented. The second request of a run drew a 429 (AWS API Gateway, no `Retry-After`); retrying after 2 s worked.
 - setlist.fm data is crowd-sourced and patchy: many setlists have 0 songs, and Lollapalooza 2023 Saturday shows only 21 artists.
