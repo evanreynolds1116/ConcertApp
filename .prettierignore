@@ -1,0 +1,11 @@
+node_modules
+.next
+.turbo
+dist
+coverage
+pnpm-lock.yaml
+supabase/.temp
+supabase/.branches
+scripts/.spike-output
+docs/mockups
+*.md

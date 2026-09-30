@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Music Junkie – Add a concert: search</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#121212}
+a{color:#5CC8FF}a:hover{color:#8FDBFF}
+button,input,select,textarea{font-family:inherit}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #121212; color: #FFFFFF; font-family: 'Figtree', system-ui, sans-serif; display: flex; flex-direction: column; overflow: hidden; position: relative">
+<header style="display: flex; align-items: center; justify-content: space-between; padding: 16px 20px 4px 8px">
+<a href="Main.dc.html" style="min-height: 44px; display: flex; align-items: center; padding: 0 12px; color: #FFFFFF; text-decoration: none; font-size: 15px; font-weight: 600">Cancel</a>
+<span style="font-size: 13px; color: #B3B3B3; font-weight: 600">Step 1 of 3</span>
+</header>
+<div style="padding: 0 20px">
+<h1 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em">Add a concert</h1>
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; margin-top: 12px" aria-hidden="true">
+<div style="height: 4px; border-radius: 2px; background: #5CC8FF"></div>
+<div style="height: 4px; border-radius: 2px; background: #333333"></div>
+<div style="height: 4px; border-radius: 2px; background: #333333"></div>
+</div>
+</div>
+<div role="group" aria-label="What are you adding?" style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; background: #242424; border-radius: 24px; padding: 4px; margin: 18px 20px 0">
+<sc-if value="{{isConcert}}" hint-placeholder-val="{{ true }}">
+<button type="button" aria-pressed="true" style="height: 40px; border: 0; border-radius: 20px; background: #5CC8FF; color: #06121A; font-size: 15px; font-weight: 700">Concert</button>
+<button type="button" aria-pressed="false" onClick="{{setFestival}}" style="height: 40px; border: 0; border-radius: 20px; background: transparent; color: #FFFFFF; font-size: 15px; font-weight: 600">Festival</button>
+</sc-if>
+<sc-if value="{{isFestival}}" hint-placeholder-val="{{ false }}">
+<button type="button" aria-pressed="false" onClick="{{setConcert}}" style="height: 40px; border: 0; border-radius: 20px; background: transparent; color: #FFFFFF; font-size: 15px; font-weight: 600">Concert</button>
+<button type="button" aria-pressed="true" style="height: 40px; border: 0; border-radius: 20px; background: #5CC8FF; color: #06121A; font-size: 15px; font-weight: 700">Festival</button>
+</sc-if>
+</div>
+<div style="padding: 14px 20px 0">
+<label for="add-search" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap">Search</label>
+<div style="display: flex; align-items: center; gap: 10px; height: 48px; padding: 0 14px; background: #242424; border-radius: 8px; color: #B3B3B3">
+<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" style="fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"><circle cx="11" cy="11" r="7"></circle><path d="M21 21l-4.3-4.3"></path></svg>
+<input id="add-search" type="search" placeholder="{{placeholder}}" value="{{query}}" onChange="{{onQuery}}" style="flex-grow: 1; min-width: 0; background: transparent; border: 0; outline: none; color: #FFFFFF; font-size: 15px">
+</div>
+</div>
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; padding: 12px 20px 0">
+<div style="display: flex; flex-direction: column; gap: 6px">
+<label for="f-month" style="font-size: 12px; font-weight: 700; color: #B3B3B3">Month</label>
+<select id="f-month" value="{{month}}" onChange="{{onMonth}}" disabled="{{monthDisabled}}" style="height: 44px; width: 100%; background: #242424; color: #FFFFFF; border: 1px solid #3A3A3A; border-radius: 8px; padding: 0 8px; font-size: 15px">
+<option value="any">Any</option>
+<option value="1">January</option>
+<option value="2">February</option>
+<option value="3">March</option>
+<option value="4">April</option>
+<option value="5">May</option>
+<option value="6">June</option>
+<option value="7">July</option>
+<option value="8">August</option>
+<option value="9">September</option>
+<option value="10">October</option>
+<option value="11">November</option>
+<option value="12">December</option>
+</select>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<label for="f-year" style="font-size: 12px; font-weight: 700; color: #B3B3B3">Year</label>
+<select id="f-year" value="{{year}}" onChange="{{onYear}}" style="height: 44px; width: 100%; background: #242424; color: #FFFFFF; border: 1px solid #3A3A3A; border-radius: 8px; padding: 0 8px; font-size: 15px">
+<option value="any">Any</option>
+<option value="2026">2026</option>
+<option value="2025">2025</option>
+<option value="2024">2024</option>
+<option value="2023">2023</option>
+<option value="2022">2022</option>
+<option value="2021">2021</option>
+<option value="2020">2020</option>
+</select>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<label for="f-state" style="font-size: 12px; font-weight: 700; color: #B3B3B3">State</label>
+<select id="f-state" value="{{usState}}" onChange="{{onState}}" style="height: 44px; width: 100%; background: #242424; color: #FFFFFF; border: 1px solid #3A3A3A; border-radius: 8px; padding: 0 8px; font-size: 15px">
+<option value="any">Any</option>
+<option value="CO">CO</option>
+<option value="DC">DC</option>
+<option value="IL">IL</option>
+<option value="NY">NY</option>
+<option value="PA">PA</option>
+<option value="TN">TN</option>
+</select>
+</div>
+</div>
+<main style="flex-grow: 1; overflow: hidden; padding-top: 14px">
+<sc-if value="{{isConcert}}" hint-placeholder-val="{{ true }}">
+<h2 style="margin: 0; padding: 0 20px 4px; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; color: #B3B3B3">3 RESULTS</h2>
+<a href="Lineup.dc.html" style="display: flex; gap: 14px; align-items: center; padding: 10px 20px; text-decoration: none; color: #FFFFFF">
+<div style="width: 52px; height: 60px; border-radius: 8px; background: #242424; display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0"><span style="font-size: 11px; font-weight: 700; color: #5CC8FF; letter-spacing: 0.08em">SEP</span><span style="font-size: 20px; font-weight: 800; line-height: 1.1">20</span><span style="font-size: 11px; color: #B3B3B3">2026</span></div>
+<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px"><div style="font-size: 16px; font-weight: 700">Phoebe Bridgers</div><div style="font-size: 13px; color: #B3B3B3">Ryman Auditorium</div><div style="font-size: 13px; color: #B3B3B3">Nashville, TN · 3 artists</div></div>
+<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" style="fill: none; stroke: #8A8A8A; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0"><path d="M9 6l6 6-6 6"></path></svg>
+</a>
+<a href="Lineup.dc.html" style="display: flex; gap: 14px; align-items: center; padding: 10px 20px; text-decoration: none; color: #FFFFFF">
+<div style="width: 52px; height: 60px; border-radius: 8px; background: #242424; display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0"><span style="font-size: 11px; font-weight: 700; color: #5CC8FF; letter-spacing: 0.08em">SEP</span><span style="font-size: 20px; font-weight: 800; line-height: 1.1">19</span><span style="font-size: 11px; color: #B3B3B3">2026</span></div>
+<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px"><div style="font-size: 16px; font-weight: 700">Phoebe Bridgers</div><div style="font-size: 13px; color: #B3B3B3">Ryman Auditorium</div><div style="font-size: 13px; color: #B3B3B3">Nashville, TN · 3 artists</div></div>
+<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" style="fill: none; stroke: #8A8A8A; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0"><path d="M9 6l6 6-6 6"></path></svg>
+</a>
+<a href="Lineup.dc.html" style="display: flex; gap: 14px; align-items: center; padding: 10px 20px; text-decoration: none; color: #FFFFFF">
+<div style="width: 52px; height: 60px; border-radius: 8px; background: #242424; display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0"><span style="font-size: 11px; font-weight: 700; color: #5CC8FF; letter-spacing: 0.08em">SEP</span><span style="font-size: 20px; font-weight: 800; line-height: 1.1">12</span><span style="font-size: 11px; color: #B3B3B3">2026</span></div>
+<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px"><div style="font-size: 16px; font-weight: 700">Phoebe Bridgers</div><div style="font-size: 13px; color: #B3B3B3">The Salt Shed</div><div style="font-size: 13px; color: #B3B3B3">Chicago, IL · 2 artists</div></div>
+<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" style="fill: none; stroke: #8A8A8A; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0"><path d="M9 6l6 6-6 6"></path></svg>
+</a>
+</sc-if>
+<sc-if value="{{isFestival}}" hint-placeholder-val="{{ false }}">
+<h2 style="margin: 0; padding: 0 20px 4px; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; color: #B3B3B3">4 DAYS · PICK THE ONE YOU ATTENDED</h2>
+<a href="Lineup.dc.html" style="display: flex; gap: 14px; align-items: center; padding: 10px 20px; text-decoration: none; color: #FFFFFF">
+<div style="width: 52px; height: 60px; border-radius: 8px; background: #242424; display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0"><span style="font-size: 11px; font-weight: 700; color: #5CC8FF; letter-spacing: 0.08em">JUN</span><span style="font-size: 20px; font-weight: 800; line-height: 1.1">12</span><span style="font-size: 11px; color: #B3B3B3">2026</span></div>
+<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px"><div style="font-size: 16px; font-weight: 700">Bonnaroo · Day 1</div><div style="font-size: 13px; color: #B3B3B3">Great Stage Park</div><div style="font-size: 13px; color: #B3B3B3">Manchester, TN · 24 artists</div></div>
+<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" style="fill: none; stroke: #8A8A8A; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0"><path d="M9 6l6 6-6 6"></path></svg>
+</a>
+<a href="Lineup.dc.html" style="display: flex; gap: 14px; align-items: center; padding: 10px 20px; text-decoration: none; color: #FFFFFF">
+<div style="width: 52px; height: 60px; border-radius: 8px; background: #242424; display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0"><span style="font-size: 11px; font-weight: 700; color: #5CC8FF; letter-spacing: 0.08em">JUN</span><span style="font-size: 20px; font-weight: 800; line-height: 1.1">13</span><span style="font-size: 11px; color: #B3B3B3">2026</span></div>
+<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px"><div style="font-size: 16px; font-weight: 700">Bonnaroo · Day 2</div><div style="font-size: 13px; color: #B3B3B3">Great Stage Park</div><div style="font-size: 13px; color: #B3B3B3">Manchester, TN · 22 artists</div></div>
+<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" style="fill: none; stroke: #8A8A8A; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0"><path d="M9 6l6 6-6 6"></path></svg>
+</a>
+<a href="Lineup.dc.html" style="display: flex; gap: 14px; align-items: center; padding: 10px 20px; text-decoration: none; color: #FFFFFF">
+<div style="width: 52px; height: 60px; border-radius: 8px; background: #242424; display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0"><span style="font-size: 11px; font-weight: 700; color: #5CC8FF; letter-spacing: 0.08em">JUN</span><span style="font-size: 20px; font-weight: 800; line-height: 1.1">14</span><span style="font-size: 11px; color: #B3B3B3">2026</span></div>
+<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px"><div style="font-size: 16px; font-weight: 700">Bonnaroo · Day 3</div><div style="font-size: 13px; color: #B3B3B3">Great Stage Park</div><div style="font-size: 13px; color: #B3B3B3">Manchester, TN · 19 artists</div></div>
+<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" style="fill: none; stroke: #8A8A8A; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0"><path d="M9 6l6 6-6 6"></path></svg>
+</a>
+<a href="Lineup.dc.html" style="display: flex; gap: 14px; align-items: center; padding: 10px 20px; text-decoration: none; color: #FFFFFF">
+<div style="width: 52px; height: 60px; border-radius: 8px; background: #242424; display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0"><span style="font-size: 11px; font-weight: 700; color: #5CC8FF; letter-spacing: 0.08em">JUN</span><span style="font-size: 20px; font-weight: 800; line-height: 1.1">15</span><span style="font-size: 11px; color: #B3B3B3">2026</span></div>
+<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px"><div style="font-size: 16px; font-weight: 700">Bonnaroo · Day 4</div><div style="font-size: 13px; color: #B3B3B3">Great Stage Park</div><div style="font-size: 13px; color: #B3B3B3">Manchester, TN · 17 artists</div></div>
+<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" style="fill: none; stroke: #8A8A8A; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0"><path d="M9 6l6 6-6 6"></path></svg>
+</a>
+</sc-if>
+<div style="padding: 12px 20px 0">
+<button type="button" style="width: 100%; min-height: 48px; border: 1px dashed #3A3A3A; border-radius: 8px; background: transparent; color: #FFFFFF; font-size: 15px; font-weight: 600">Can't find it? <span style="color: #5CC8FF">Add it manually</span></button>
+</div>
+</main>
+<p style="margin: 0; padding: 12px 20px 20px; font-size: 12px; color: #8A8A8A; text-align: center">Concert data from <a href="https://www.setlist.fm" style="color: #5CC8FF">setlist.fm</a></p>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+constructor(props) {
+super(props);
+this.state = { mode: 'concert', query: 'Phoebe Bridgers', month: '9', year: '2026', usState: 'any' };
+}
+renderVals() {
+const s = this.state;
+return {
+isConcert: s.mode === 'concert',
+isFestival: s.mode === 'festival',
+placeholder: s.mode === 'concert' ? 'Artist or venue' : 'Festival name',
+query: s.query,
+month: s.month,
+year: s.year,
+usState: s.usState,
+monthDisabled: s.year === 'any',
+setConcert: () => this.setState({ mode: 'concert', query: 'Phoebe Bridgers', month: '9' }),
+setFestival: () => this.setState({ mode: 'festival', query: 'Bonnaroo', month: '6' }),
+onQuery: (e) => this.setState({ query: e.target.value }),
+onMonth: (e) => this.setState({ month: e.target.value }),
+onYear: (e) => this.setState(e.target.value === 'any' ? { year: 'any', month: 'any' } : { year: e.target.value }),
+onState: (e) => this.setState({ usState: e.target.value })
+};
+}
+}
+</script>
+</body>
+</html>

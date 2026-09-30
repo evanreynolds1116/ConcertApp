@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Music Junkie – Add a concert: details</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#121212}
+a{color:#5CC8FF}a:hover{color:#8FDBFF}
+button,input,select,textarea{font-family:inherit}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #121212; color: #FFFFFF; font-family: 'Figtree', system-ui, sans-serif; display: flex; flex-direction: column; overflow: hidden; position: relative">
+<header style="display: flex; align-items: center; justify-content: space-between; padding: 16px 20px 4px 8px">
+<a href="Lineup.dc.html" style="min-height: 44px; display: flex; align-items: center; gap: 2px; padding: 0 12px 0 4px; color: #FFFFFF; text-decoration: none; font-size: 15px; font-weight: 600"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" style="fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"><path d="M15 18l-6-6 6-6"></path></svg>Back</a>
+<span style="font-size: 13px; color: #B3B3B3; font-weight: 600">Step 3 of 3</span>
+</header>
+<div style="padding: 0 20px">
+<h1 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em">Details</h1>
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; margin-top: 12px" aria-hidden="true">
+<div style="height: 4px; border-radius: 2px; background: #5CC8FF"></div>
+<div style="height: 4px; border-radius: 2px; background: #5CC8FF"></div>
+<div style="height: 4px; border-radius: 2px; background: #5CC8FF"></div>
+</div>
+<p style="margin: 14px 0 0; font-size: 14px; color: #B3B3B3">Phoebe Bridgers + 2 more · Ryman Auditorium · Sep 20, 2026. Everything here is optional.</p>
+</div>
+<main style="flex-grow: 1; overflow: hidden; padding: 16px 20px 0; display: flex; flex-direction: column; gap: 14px">
+<section aria-labelledby="rating-h" style="padding: 16px; background: #1E1E1E; border-radius: 12px; display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; justify-content: space-between; align-items: center">
+<h2 id="rating-h" style="margin: 0; font-size: 15px; font-weight: 700">Rating</h2>
+<sc-if value="{{hasRating}}" hint-placeholder-val="{{ true }}">
+<button type="button" onClick="{{clear}}" style="min-height: 44px; padding: 0 4px; border: 0; background: transparent; color: #B3B3B3; font-size: 14px; font-weight: 600">Clear</button>
+</sc-if>
+</div>
+<sc-if value="{{hasRating}}" hint-placeholder-val="{{ true }}">
+<div style="display: flex; align-items: baseline; gap: 6px">
+<span style="font-size: 48px; font-weight: 800; color: #5CC8FF; line-height: 1">{{ratingText}}</span>
+<span style="font-size: 16px; color: #B3B3B3; font-weight: 600">/ 10</span>
+</div>
+<div style="display: flex; align-items: center; gap: 12px">
+<input type="range" min="0" max="100" step="1" value="{{ratingRaw}}" onChange="{{onSlide}}" aria-label="Rating, 0 to 10" style="flex-grow: 1; accent-color: #5CC8FF; height: 44px">
+<label for="rating-num" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap">Rating value</label>
+<input id="rating-num" type="number" min="0" max="10" step="0.1" value="{{ratingText}}" onChange="{{onNumber}}" style="width: 72px; height: 44px; padding: 0 8px; background: #242424; border: 1px solid #3A3A3A; border-radius: 8px; color: #FFFFFF; font-size: 16px; font-weight: 700; text-align: center">
+</div>
+</sc-if>
+<sc-if value="{{noRating}}" hint-placeholder-val="{{ false }}">
+<p style="margin: 0; font-size: 14px; color: #B3B3B3">No rating yet. Ratings go from 0.0 to 10.0.</p>
+<button type="button" onClick="{{addRating}}" style="align-self: flex-start; height: 44px; padding: 0 18px; border: 1px solid #5CC8FF; border-radius: 22px; background: transparent; color: #5CC8FF; font-size: 15px; font-weight: 700">Add a rating</button>
+</sc-if>
+</section>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<label for="price" style="font-size: 15px; font-weight: 700">Ticket price</label>
+<div style="display: flex; align-items: center; height: 48px; padding: 0 12px; background: #242424; border: 1px solid #3A3A3A; border-radius: 8px; gap: 6px">
+<span style="font-size: 16px; color: #B3B3B3; font-weight: 600" aria-hidden="true">$</span>
+<input id="price" type="text" inputmode="decimal" placeholder="0.00" value="{{price}}" onChange="{{onPrice}}" style="flex-grow: 1; min-width: 0; background: transparent; border: 0; outline: none; color: #FFFFFF; font-size: 16px">
+<span style="font-size: 13px; color: #8A8A8A">USD</span>
+</div>
+<span style="font-size: 12px; color: #8A8A8A">One ticket, fees included</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px">
+<label for="notes" style="font-size: 15px; font-weight: 700">Notes</label>
+<textarea id="notes" rows="4" placeholder="Favorite moment, who you went with, the setlist surprise…" value="{{notes}}" onChange="{{onNotes}}" style="resize: none; padding: 12px; background: #242424; border: 1px solid #3A3A3A; border-radius: 8px; color: #FFFFFF; font-size: 15px; line-height: 1.4"></textarea>
+</div>
+</main>
+<div style="padding: 12px 20px 24px; border-top: 1px solid #222222">
+<a href="Detail.dc.html" style="display: flex; align-items: center; justify-content: center; height: 52px; border-radius: 26px; background: #5CC8FF; color: #06121A; text-decoration: none; font-size: 16px; font-weight: 800">Save concert</a>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+constructor(props) {
+super(props);
+this.state = { rating: 92, price: '85.00', notes: 'Went with Sam. The encore singalong was unreal.' };
+}
+renderVals() {
+const r = this.state.rating;
+const has = r !== null && r !== undefined;
+return {
+hasRating: has,
+noRating: !has,
+ratingRaw: has ? r : 0,
+ratingText: has ? (r / 10).toFixed(1) : '',
+onSlide: (e) => this.setState({ rating: Number(e.target.value) }),
+onNumber: (e) => {
+const v = Math.round(Number(e.target.value) * 10);
+if (!isNaN(v)) this.setState({ rating: Math.max(0, Math.min(100, v)) });
+},
+clear: () => this.setState({ rating: null }),
+addRating: () => this.setState({ rating: 70 }),
+price: this.state.price,
+onPrice: (e) => this.setState({ price: e.target.value }),
+notes: this.state.notes,
+onNotes: (e) => this.setState({ notes: e.target.value })
+};
+}
+}
+</script>
+</body>
+</html>

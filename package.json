@@ -1,0 +1,31 @@
+{
+  "name": "music-junkie",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@12.6.0",
+  "engines": {
+    "node": ">=20.9.0"
+  },
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "spike:setlistfm": "tsx scripts/setlistfm-spike.ts",
+    "supabase": "supabase",
+    "db:start": "supabase start",
+    "db:stop": "supabase stop",
+    "db:status": "supabase status"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.43",
+    "prettier": "^3.9.9",
+    "supabase": "^2.118.0",
+    "tsx": "^4.23.15",
+    "turbo": "^2.11.5",
+    "typescript": "^6.0.3"
+  }
+}

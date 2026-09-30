@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Music Junkie – Your concerts</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#121212}
+a{color:#5CC8FF}a:hover{color:#8FDBFF}
+button,input,select,textarea{font-family:inherit}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #121212; color: #FFFFFF; font-family: 'Figtree', system-ui, sans-serif; display: flex; flex-direction: column; overflow: hidden; position: relative">
+<header style="padding: 24px 20px 12px; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; align-items: center; gap: 8px">
+<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" style="fill: #5CC8FF"><rect x="3" y="10" width="4" height="10" rx="1"></rect><rect x="10" y="4" width="4" height="16" rx="1"></rect><rect x="17" y="7" width="4" height="13" rx="1"></rect></svg>
+<span style="font-size: 16px; font-weight: 800; letter-spacing: -0.01em">Music Junkie</span>
+</div>
+<div>
+<h1 style="margin: 0; font-size: 30px; font-weight: 800; letter-spacing: -0.02em">Your concerts</h1>
+<p style="margin: 4px 0 0; font-size: 14px; color: #B3B3B3">42 shows logged</p>
+</div>
+</header>
+<div style="padding: 0 20px">
+<label for="log-search" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap">Search by artist</label>
+<div style="display: flex; align-items: center; gap: 10px; height: 48px; padding: 0 14px; background: #242424; border-radius: 8px; color: #B3B3B3">
+<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" style="fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"><circle cx="11" cy="11" r="7"></circle><path d="M21 21l-4.3-4.3"></path></svg>
+<input id="log-search" type="search" placeholder="Search by artist" style="flex-grow: 1; min-width: 0; background: transparent; border: 0; outline: none; color: #FFFFFF; font-size: 15px">
+</div>
+</div>
+<div style="display: flex; gap: 8px; padding: 12px 20px 6px">
+<button type="button" style="height: 44px; padding: 0 12px 0 16px; border-radius: 22px; border: 1px solid #3A3A3A; background: transparent; color: #FFFFFF; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 6px">Year<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" style="fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"><path d="M6 9l6 6 6-6"></path></svg></button>
+<button type="button" style="height: 44px; padding: 0 12px 0 16px; border-radius: 22px; border: 1px solid #3A3A3A; background: transparent; color: #FFFFFF; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 6px">Month<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" style="fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"><path d="M6 9l6 6 6-6"></path></svg></button>
+<button type="button" style="height: 44px; padding: 0 12px 0 16px; border-radius: 22px; border: 1px solid #3A3A3A; background: transparent; color: #FFFFFF; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 6px">State<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" style="fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"><path d="M6 9l6 6 6-6"></path></svg></button>
+</div>
+<main style="flex-grow: 1; overflow: hidden; padding-top: 4px">
+<a href="Detail.dc.html" style="display: flex; gap: 14px; align-items: center; padding: 10px 20px; text-decoration: none; color: #FFFFFF">
+<div style="width: 52px; height: 60px; border-radius: 8px; background: #242424; display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0"><span style="font-size: 11px; font-weight: 700; color: #5CC8FF; letter-spacing: 0.08em">SEP</span><span style="font-size: 20px; font-weight: 800; line-height: 1.1">20</span><span style="font-size: 11px; color: #B3B3B3">2026</span></div>
+<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px">
+<div style="font-size: 16px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">Phoebe Bridgers</div>
+<div style="font-size: 14px; color: #D9D9D9; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">with MUNA, Sloppy Jane</div>
+<div style="font-size: 13px; color: #B3B3B3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">Ryman Auditorium · Nashville, TN</div>
+</div>
+<div style="min-width: 44px; height: 28px; border-radius: 14px; background: #16303E; color: #5CC8FF; font-size: 14px; font-weight: 700; display: flex; align-items: center; justify-content: center">9.2</div>
+</a>
+<a href="Detail.dc.html" style="display: flex; gap: 14px; align-items: center; padding: 10px 20px; text-decoration: none; color: #FFFFFF">
+<div style="width: 52px; height: 60px; border-radius: 8px; background: #242424; display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0"><span style="font-size: 11px; font-weight: 700; color: #5CC8FF; letter-spacing: 0.08em">AUG</span><span style="font-size: 20px; font-weight: 800; line-height: 1.1">29</span><span style="font-size: 11px; color: #B3B3B3">2026</span></div>
+<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px">
+<div style="font-size: 16px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">Khruangbin</div>
+<div style="font-size: 14px; color: #D9D9D9; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">with Men I Trust</div>
+<div style="font-size: 13px; color: #B3B3B3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">Red Rocks Amphitheatre · Morrison, CO</div>
+</div>
+<div style="min-width: 44px; height: 28px; border-radius: 14px; background: #16303E; color: #5CC8FF; font-size: 14px; font-weight: 700; display: flex; align-items: center; justify-content: center">8.8</div>
+</a>
+<a href="Detail.dc.html" style="display: flex; gap: 14px; align-items: center; padding: 10px 20px; text-decoration: none; color: #FFFFFF">
+<div style="width: 52px; height: 60px; border-radius: 8px; background: #242424; display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0"><span style="font-size: 11px; font-weight: 700; color: #5CC8FF; letter-spacing: 0.08em">JUN</span><span style="font-size: 20px; font-weight: 800; line-height: 1.1">14</span><span style="font-size: 11px; color: #B3B3B3">2026</span></div>
+<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px">
+<div style="font-size: 16px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">Tyler, the Creator</div>
+<div style="font-size: 14px; color: #D9D9D9; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">with Doechii, Clairo + 16 more</div>
+<div style="display: flex; align-items: center; gap: 6px; min-width: 0"><span style="flex-shrink: 0; font-size: 11px; font-weight: 700; color: #5CC8FF; border: 1px solid #5CC8FF; border-radius: 10px; padding: 1px 7px">Bonnaroo · Day 3</span><span style="font-size: 13px; color: #B3B3B3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">Manchester, TN</span></div>
+</div>
+<div style="min-width: 44px; height: 28px; border-radius: 14px; background: #16303E; color: #5CC8FF; font-size: 14px; font-weight: 700; display: flex; align-items: center; justify-content: center">9.0</div>
+</a>
+<a href="Detail.dc.html" style="display: flex; gap: 14px; align-items: center; padding: 10px 20px; text-decoration: none; color: #FFFFFF">
+<div style="width: 52px; height: 60px; border-radius: 8px; background: #242424; display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0"><span style="font-size: 11px; font-weight: 700; color: #5CC8FF; letter-spacing: 0.08em">JUN</span><span style="font-size: 20px; font-weight: 800; line-height: 1.1">13</span><span style="font-size: 11px; color: #B3B3B3">2026</span></div>
+<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px">
+<div style="font-size: 16px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">Hozier</div>
+<div style="font-size: 14px; color: #D9D9D9; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">with Noah Kahan, Mt. Joy + 19 more</div>
+<div style="display: flex; align-items: center; gap: 6px; min-width: 0"><span style="flex-shrink: 0; font-size: 11px; font-weight: 700; color: #5CC8FF; border: 1px solid #5CC8FF; border-radius: 10px; padding: 1px 7px">Bonnaroo · Day 2</span><span style="font-size: 13px; color: #B3B3B3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">Manchester, TN</span></div>
+</div>
+<div style="min-width: 44px; height: 28px; border-radius: 14px; background: #16303E; color: #5CC8FF; font-size: 14px; font-weight: 700; display: flex; align-items: center; justify-content: center">8.1</div>
+</a>
+<a href="Detail.dc.html" style="display: flex; gap: 14px; align-items: center; padding: 10px 20px; text-decoration: none; color: #FFFFFF">
+<div style="width: 52px; height: 60px; border-radius: 8px; background: #242424; display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0"><span style="font-size: 11px; font-weight: 700; color: #5CC8FF; letter-spacing: 0.08em">APR</span><span style="font-size: 20px; font-weight: 800; line-height: 1.1">03</span><span style="font-size: 11px; color: #B3B3B3">2026</span></div>
+<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px">
+<div style="font-size: 16px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">Turnstile</div>
+<div style="font-size: 14px; color: #D9D9D9; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">with Snail Mail, Militarie Gun</div>
+<div style="font-size: 13px; color: #B3B3B3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">The Anthem · Washington, DC</div>
+</div>
+<div style="min-width: 44px"></div>
+</a>
+<a href="Detail.dc.html" style="display: flex; gap: 14px; align-items: center; padding: 10px 20px; text-decoration: none; color: #FFFFFF">
+<div style="width: 52px; height: 60px; border-radius: 8px; background: #242424; display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0"><span style="font-size: 11px; font-weight: 700; color: #5CC8FF; letter-spacing: 0.08em">FEB</span><span style="font-size: 20px; font-weight: 800; line-height: 1.1">08</span><span style="font-size: 11px; color: #B3B3B3">2026</span></div>
+<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px">
+<div style="font-size: 16px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">Mt. Joy</div>
+<div style="font-size: 14px; color: #D9D9D9; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">with Wild Rivers</div>
+<div style="font-size: 13px; color: #B3B3B3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">The Fillmore · Philadelphia, PA</div>
+</div>
+<div style="min-width: 44px; height: 28px; border-radius: 14px; background: #16303E; color: #5CC8FF; font-size: 14px; font-weight: 700; display: flex; align-items: center; justify-content: center">7.4</div>
+</a>
+</main>
+<a href="Search.dc.html" aria-label="Add concert" style="position: absolute; right: 20px; bottom: 92px; width: 56px; height: 56px; border-radius: 28px; background: #5CC8FF; color: #06121A; display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 20px rgba(0,0,0,0.5)"><svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true" style="fill: none; stroke: currentColor; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round"><path d="M12 5v14M5 12h14"></path></svg></a>
+<nav aria-label="Main" style="height: 76px; flex-shrink: 0; background: #181818; border-top: 1px solid #282828; display: flex; justify-content: space-around; align-items: center; box-sizing: border-box; padding: 0 8px 6px">
+<a href="Main.dc.html" aria-current="page" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-width: 60px; min-height: 52px; text-decoration: none; color: #FFFFFF; font-size: 11px; font-weight: 600"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" style="fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"></path></svg>Log</a>
+<a href="Stats.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-width: 60px; min-height: 52px; text-decoration: none; color: #8A8A8A; font-size: 11px; font-weight: 600"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" style="fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"><path d="M3 20h18M6 16v-5M11 16V6M16 16v-8"></path></svg>Stats</a>
+<a href="Feed.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-width: 60px; min-height: 52px; text-decoration: none; color: #8A8A8A; font-size: 11px; font-weight: 600"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" style="fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"><path d="M3 12h4l3-8 4 16 3-8h4"></path></svg>Feed</a>
+<a href="People.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-width: 60px; min-height: 52px; text-decoration: none; color: #8A8A8A; font-size: 11px; font-weight: 600"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" style="fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"><circle cx="9" cy="8" r="4"></circle><path d="M2 21c0-4 3-6 7-6s7 2 7 6M16 4a4 4 0 0 1 0 8M22 21c0-3-2-5-4-5.5"></path></svg>People</a>
+<a href="Profile.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-width: 60px; min-height: 52px; text-decoration: none; color: #8A8A8A; font-size: 11px; font-weight: 600"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" style="fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"><circle cx="12" cy="8" r="4"></circle><path d="M4 21c0-4 4-7 8-7s8 3 8 7"></path></svg>Profile</a>
+</nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+renderVals() {
+return {};
+}
+}
+</script>
+</body>
+</html>

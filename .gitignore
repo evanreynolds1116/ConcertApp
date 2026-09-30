@@ -1,0 +1,50 @@
+# Dependencies
+node_modules/
+
+# Build output
+.next/
+out/
+dist/
+build/
+*.tsbuildinfo
+next-env.d.ts
+
+# Turborepo
+.turbo/
+
+# Tests
+coverage/
+playwright-report/
+test-results/
+blob-report/
+
+# Env files (real keys live here; only the .env.example templates are committed)
+.env
+.env.*
+!.env.example
+!**/.env.example
+
+# Supabase local files
+supabase/.branches/
+supabase/.temp/
+supabase/functions/.env
+
+# setlist.fm spike raw output (don't mirror setlist.fm data)
+scripts/.spike-output/
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# OS / editor
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/*
+!.vscode/extensions.json
+.idea/
+
+# Vercel / certs
+.vercel/
+*.pem

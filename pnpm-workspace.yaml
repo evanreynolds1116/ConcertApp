@@ -1,0 +1,25 @@
+packages:
+  - "apps/*"
+  - "packages/*"
+allowBuilds:
+  esbuild: true
+  supabase: true
+  sharp: false
+  unrs-resolver: false
+minimumReleaseAgeExclude:
+  - "@next/env@16.3.8"
+  - "@next/eslint-plugin-next@16.3.8"
+  - "@next/swc-darwin-arm64@16.3.8"
+  - "@next/swc-darwin-x64@16.3.8"
+  - "@next/swc-linux-arm64-gnu@16.3.8"
+  - "@next/swc-linux-arm64-musl@16.3.8"
+  - "@next/swc-linux-x64-gnu@16.3.8"
+  - "@next/swc-linux-x64-musl@16.3.8"
+  - "@next/swc-win32-arm64-msvc@16.3.8"
+  - "@next/swc-win32-x64-msvc@16.3.8"
+  - eslint-config-next@16.3.8
+  - next@16.3.8
+# Stopgap for Node 20.17: Vite 7+/rolldown need Node >=20.19. Remove this (and move to
+# Vitest 5) once the dev machine is on Node 22.12+ or 24 LTS. See PROGRESS.md.
+overrides:
+  vite: ^6

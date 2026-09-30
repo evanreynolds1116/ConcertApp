@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Music Junkie – People</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#121212}
+a{color:#5CC8FF}a:hover{color:#8FDBFF}
+button,input,select,textarea{font-family:inherit}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #121212; color: #FFFFFF; font-family: 'Figtree', system-ui, sans-serif; display: flex; flex-direction: column; overflow: hidden; position: relative">
+<header style="padding: 24px 20px 12px">
+<h1 style="margin: 0; font-size: 30px; font-weight: 800; letter-spacing: -0.02em">People</h1>
+</header>
+<div style="padding: 0 20px">
+<label for="people-search" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap">Search people</label>
+<div style="display: flex; align-items: center; gap: 10px; height: 48px; padding: 0 14px; background: #242424; border-radius: 8px; color: #B3B3B3">
+<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" style="fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"><circle cx="11" cy="11" r="7"></circle><path d="M21 21l-4.3-4.3"></path></svg>
+<input id="people-search" type="search" placeholder="Username or name" value="{{query}}" onChange="{{onQuery}}" style="flex-grow: 1; min-width: 0; background: transparent; border: 0; outline: none; color: #FFFFFF; font-size: 15px">
+</div>
+</div>
+<main style="flex-grow: 1; overflow: hidden; padding-top: 16px">
+<h2 style="margin: 0; padding: 0 20px 6px; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; color: #B3B3B3">4 PEOPLE</h2>
+<ul style="list-style: none; margin: 0; padding: 0">
+<sc-for list="{{people}}" as="p" hint-placeholder-count="4">
+<li style="display: flex; align-items: center; gap: 12px; padding: 10px 20px">
+<a href="{{p.href}}" style="flex-grow: 1; min-width: 0; display: flex; align-items: center; gap: 12px; text-decoration: none; color: #FFFFFF; min-height: 48px">
+<span aria-hidden="true" style="flex-shrink: 0; width: 48px; height: 48px; border-radius: 24px; background: {{p.color}}; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 800">{{p.initials}}</span>
+<div style="min-width: 0; display: flex; flex-direction: column; gap: 2px">
+<span style="font-size: 16px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{p.name}}</span>
+<span style="display: flex; align-items: center; gap: 4px; font-size: 13px; color: #B3B3B3">{{p.handle}}<sc-if value="{{p.private}}" hint-placeholder-val="{{ false }}"><svg viewBox="0 0 24 24" width="13" height="13" role="img" aria-label="Private account" style="fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg></sc-if></span>
+</div>
+</a>
+<sc-if value="{{p.isFollow}}" hint-placeholder-val="{{ true }}">
+<button type="button" onClick="{{p.act}}" style="flex-shrink: 0; min-width: 104px; height: 40px; border: 0; border-radius: 20px; background: #5CC8FF; color: #06121A; font-size: 14px; font-weight: 700">Follow</button>
+</sc-if>
+<sc-if value="{{p.isRequested}}" hint-placeholder-val="{{ false }}">
+<button type="button" onClick="{{p.act}}" aria-label="Requested, tap to cancel" style="flex-shrink: 0; min-width: 104px; height: 40px; border: 1px solid #5A5A5A; border-radius: 20px; background: transparent; color: #FFFFFF; font-size: 14px; font-weight: 700">Requested</button>
+</sc-if>
+<sc-if value="{{p.isFollowing}}" hint-placeholder-val="{{ false }}">
+<button type="button" onClick="{{p.act}}" aria-label="Following, tap to unfollow" style="flex-shrink: 0; min-width: 104px; height: 40px; border: 0; border-radius: 20px; background: #2A2A2A; color: #FFFFFF; font-size: 14px; font-weight: 700">Following</button>
+</sc-if>
+</li>
+</sc-for>
+</ul>
+<p style="margin: 12px 20px 0; padding: 12px 14px; background: #1E1E1E; border-radius: 10px; font-size: 13px; color: #B3B3B3; line-height: 1.4">Public accounts are followed right away. Private accounts get a request they must accept.</p>
+</main>
+<nav aria-label="Main" style="height: 76px; flex-shrink: 0; background: #181818; border-top: 1px solid #282828; display: flex; justify-content: space-around; align-items: center; box-sizing: border-box; padding: 0 8px 6px">
+<a href="Main.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-width: 60px; min-height: 52px; text-decoration: none; color: #8A8A8A; font-size: 11px; font-weight: 600"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" style="fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"></path></svg>Log</a>
+<a href="Stats.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-width: 60px; min-height: 52px; text-decoration: none; color: #8A8A8A; font-size: 11px; font-weight: 600"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" style="fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"><path d="M3 20h18M6 16v-5M11 16V6M16 16v-8"></path></svg>Stats</a>
+<a href="Feed.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-width: 60px; min-height: 52px; text-decoration: none; color: #8A8A8A; font-size: 11px; font-weight: 600"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" style="fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"><path d="M3 12h4l3-8 4 16 3-8h4"></path></svg>Feed</a>
+<a href="People.dc.html" aria-current="page" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-width: 60px; min-height: 52px; text-decoration: none; color: #FFFFFF; font-size: 11px; font-weight: 600"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" style="fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"><circle cx="9" cy="8" r="4"></circle><path d="M2 21c0-4 3-6 7-6s7 2 7 6M16 4a4 4 0 0 1 0 8M22 21c0-3-2-5-4-5.5"></path></svg>People</a>
+<a href="Profile.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-width: 60px; min-height: 52px; text-decoration: none; color: #8A8A8A; font-size: 11px; font-weight: 600"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" style="fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"><circle cx="12" cy="8" r="4"></circle><path d="M4 21c0-4 4-7 8-7s8 3 8 7"></path></svg>Profile</a>
+</nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+constructor(props) {
+super(props);
+this.state = {
+query: 'sam',
+status: { samcarter: 'following', samruiz: 'requested', sammyo: 'none', sampatel: 'none' }
+};
+}
+renderVals() {
+const base = [
+{ id: 'samcarter', name: 'Sam Carter', handle: '@samcarter', initials: 'SC', color: '#3E6B85', private: false, href: 'Feed.dc.html' },
+{ id: 'samruiz', name: 'Samantha Ruiz', handle: '@samruiz', initials: 'SR', color: '#8A4A5A', private: true, href: 'People.dc.html' },
+{ id: 'sammyo', name: 'Sammy Okafor', handle: '@sammyo', initials: 'SO', color: '#4A7A5A', private: false, href: 'Feed.dc.html' },
+{ id: 'sampatel', name: 'Sam Patel', handle: '@sampatel', initials: 'SP', color: '#7A5C3E', private: true, href: 'Locked.dc.html' }
+];
+const st = this.state.status;
+const people = base.map((p) => {
+const s = st[p.id];
+return Object.assign({}, p, {
+isFollow: s === 'none',
+isRequested: s === 'requested',
+isFollowing: s === 'following',
+act: () => {
+const next = Object.assign({}, st);
+next[p.id] = s === 'none' ? (p.private ? 'requested' : 'following') : 'none';
+this.setState({ status: next });
+}
+});
+});
+return {
+query: this.state.query,
+onQuery: (e) => this.setState({ query: e.target.value }),
+people: people
+};
+}
+}
+</script>
+</body>
+</html>

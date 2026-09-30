@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Music Junkie – Feed</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#121212}
+a{color:#5CC8FF}a:hover{color:#8FDBFF}
+button,input,select,textarea{font-family:inherit}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #121212; color: #FFFFFF; font-family: 'Figtree', system-ui, sans-serif; display: flex; flex-direction: column; overflow: hidden; position: relative">
+<header style="padding: 24px 20px 8px; display: flex; align-items: center; justify-content: space-between">
+<h1 style="margin: 0; font-size: 30px; font-weight: 800; letter-spacing: -0.02em">Feed</h1>
+<a href="People.dc.html" aria-label="Find people" style="width: 44px; height: 44px; border-radius: 22px; background: #242424; color: #FFFFFF; display: flex; align-items: center; justify-content: center"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" style="fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"><circle cx="11" cy="11" r="7"></circle><path d="M21 21l-4.3-4.3"></path></svg></a>
+</header>
+<main style="flex-grow: 1; overflow: hidden">
+<ul style="list-style: none; margin: 0; padding: 0">
+<li style="display: flex; gap: 12px; padding: 14px 20px; border-bottom: 1px solid #222222">
+<span aria-hidden="true" style="flex-shrink: 0; width: 40px; height: 40px; border-radius: 20px; background: #3E6B85; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 800">SC</span>
+<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 10px">
+<p style="margin: 0; font-size: 15px; line-height: 1.35"><strong>Sam Carter</strong> logged a concert <span style="color: #8A8A8A">· 2h</span></p>
+<a href="Detail.dc.html" style="display: flex; align-items: center; gap: 12px; padding: 12px; background: #1E1E1E; border-radius: 10px; text-decoration: none; color: #FFFFFF">
+<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 16px; font-weight: 700">Khruangbin</span><span style="font-size: 13px; color: #B3B3B3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">Red Rocks Amphitheatre · Morrison, CO</span><span style="font-size: 13px; color: #B3B3B3">Sat, Aug 29, 2026</span></div>
+<span style="min-width: 44px; height: 28px; border-radius: 14px; background: #16303E; color: #5CC8FF; font-size: 14px; font-weight: 700; display: flex; align-items: center; justify-content: center">9.4</span>
+</a>
+</div>
+</li>
+<li style="display: flex; gap: 12px; padding: 14px 20px; border-bottom: 1px solid #222222; align-items: center">
+<span aria-hidden="true" style="flex-shrink: 0; width: 40px; height: 40px; border-radius: 20px; background: #7A5C3E; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 800">AK</span>
+<p style="margin: 0; font-size: 15px; line-height: 1.35"><strong>Alex Kim</strong> started following <strong>Jordan Lee</strong> <span style="color: #8A8A8A">· 5h</span></p>
+</li>
+<li style="display: flex; gap: 12px; padding: 14px 20px; border-bottom: 1px solid #222222">
+<span aria-hidden="true" style="flex-shrink: 0; width: 40px; height: 40px; border-radius: 20px; background: #5CC8FF; color: #06121A; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 800">CM</span>
+<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 10px">
+<p style="margin: 0; font-size: 15px; line-height: 1.35"><strong>You</strong> logged a concert <span style="color: #8A8A8A">· Sep 20</span></p>
+<a href="Detail.dc.html" style="display: flex; align-items: center; gap: 12px; padding: 12px; background: #1E1E1E; border-radius: 10px; text-decoration: none; color: #FFFFFF">
+<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 16px; font-weight: 700">Phoebe Bridgers</span><span style="font-size: 13px; color: #B3B3B3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">Ryman Auditorium · Nashville, TN</span><span style="font-size: 13px; color: #B3B3B3">Sat, Sep 20, 2026</span></div>
+<span style="min-width: 44px; height: 28px; border-radius: 14px; background: #16303E; color: #5CC8FF; font-size: 14px; font-weight: 700; display: flex; align-items: center; justify-content: center">9.2</span>
+</a>
+</div>
+</li>
+<li style="display: flex; gap: 12px; padding: 14px 20px; border-bottom: 1px solid #222222">
+<span aria-hidden="true" style="flex-shrink: 0; width: 40px; height: 40px; border-radius: 20px; background: #5A4A8A; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 800">JL</span>
+<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 10px">
+<p style="margin: 0; font-size: 15px; line-height: 1.35"><strong>Jordan Lee</strong> logged a festival day <span style="color: #8A8A8A">· Sep 18</span></p>
+<a href="Detail.dc.html" style="display: flex; align-items: center; gap: 12px; padding: 12px; background: #1E1E1E; border-radius: 10px; text-decoration: none; color: #FFFFFF">
+<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 16px; font-weight: 700">Bonnaroo · Day 3</span><span style="font-size: 13px; color: #B3B3B3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">Great Stage Park · Manchester, TN</span><span style="font-size: 13px; color: #B3B3B3">Sun, Jun 14, 2026 · 12 artists</span></div>
+</a>
+</div>
+</li>
+<li style="display: flex; gap: 12px; padding: 14px 20px; align-items: center">
+<span aria-hidden="true" style="flex-shrink: 0; width: 40px; height: 40px; border-radius: 20px; background: #3E6B85; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 800">SC</span>
+<p style="margin: 0; font-size: 15px; line-height: 1.35"><strong>Sam Carter</strong> started following <strong>you</strong> <span style="color: #8A8A8A">· Sep 15</span></p>
+</li>
+</ul>
+</main>
+<nav aria-label="Main" style="height: 76px; flex-shrink: 0; background: #181818; border-top: 1px solid #282828; display: flex; justify-content: space-around; align-items: center; box-sizing: border-box; padding: 0 8px 6px">
+<a href="Main.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-width: 60px; min-height: 52px; text-decoration: none; color: #8A8A8A; font-size: 11px; font-weight: 600"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" style="fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"></path></svg>Log</a>
+<a href="Stats.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-width: 60px; min-height: 52px; text-decoration: none; color: #8A8A8A; font-size: 11px; font-weight: 600"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" style="fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"><path d="M3 20h18M6 16v-5M11 16V6M16 16v-8"></path></svg>Stats</a>
+<a href="Feed.dc.html" aria-current="page" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-width: 60px; min-height: 52px; text-decoration: none; color: #FFFFFF; font-size: 11px; font-weight: 600"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" style="fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"><path d="M3 12h4l3-8 4 16 3-8h4"></path></svg>Feed</a>
+<a href="People.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-width: 60px; min-height: 52px; text-decoration: none; color: #8A8A8A; font-size: 11px; font-weight: 600"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" style="fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"><circle cx="9" cy="8" r="4"></circle><path d="M2 21c0-4 3-6 7-6s7 2 7 6M16 4a4 4 0 0 1 0 8M22 21c0-3-2-5-4-5.5"></path></svg>People</a>
+<a href="Profile.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-width: 60px; min-height: 52px; text-decoration: none; color: #8A8A8A; font-size: 11px; font-weight: 600"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" style="fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"><circle cx="12" cy="8" r="4"></circle><path d="M4 21c0-4 4-7 8-7s8 3 8 7"></path></svg>Profile</a>
+</nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+renderVals() {
+return {};
+}
+}
+</script>
+</body>
+</html>

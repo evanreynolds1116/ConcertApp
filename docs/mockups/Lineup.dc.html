@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Music Junkie – Add a concert: edit lineup</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#121212}
+a{color:#5CC8FF}a:hover{color:#8FDBFF}
+button,input,select,textarea{font-family:inherit}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #121212; color: #FFFFFF; font-family: 'Figtree', system-ui, sans-serif; display: flex; flex-direction: column; overflow: hidden; position: relative">
+<header style="display: flex; align-items: center; justify-content: space-between; padding: 16px 20px 4px 8px">
+<a href="Search.dc.html" style="min-height: 44px; display: flex; align-items: center; gap: 2px; padding: 0 12px 0 4px; color: #FFFFFF; text-decoration: none; font-size: 15px; font-weight: 600"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" style="fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"><path d="M15 18l-6-6 6-6"></path></svg>Back</a>
+<span style="font-size: 13px; color: #B3B3B3; font-weight: 600">Step 2 of 3</span>
+</header>
+<div style="padding: 0 20px">
+<h1 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em">Edit lineup</h1>
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; margin-top: 12px" aria-hidden="true">
+<div style="height: 4px; border-radius: 2px; background: #5CC8FF"></div>
+<div style="height: 4px; border-radius: 2px; background: #5CC8FF"></div>
+<div style="height: 4px; border-radius: 2px; background: #333333"></div>
+</div>
+<div style="margin-top: 16px; padding: 14px 16px; background: #1E1E1E; border-radius: 12px; display: flex; flex-direction: column; gap: 2px">
+<span style="font-size: 16px; font-weight: 700">Ryman Auditorium</span>
+<span style="font-size: 13px; color: #B3B3B3">Nashville, TN · Sat, Sep 20, 2026</span>
+</div>
+<p style="margin: 14px 0 10px; font-size: 14px; color: #B3B3B3">Drag to reorder, or use the arrows. Remove anyone you didn't see. The top artist is the headliner.</p>
+</div>
+<main style="flex-grow: 1; overflow: hidden; padding: 0 20px">
+<ol style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px">
+<sc-for list="{{rows}}" as="r" hint-placeholder-count="3">
+<li style="display: flex; align-items: center; gap: 8px; min-height: 60px; padding: 0 4px 0 8px; background: #1E1E1E; border-radius: 10px">
+<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" style="fill: none; stroke: #8A8A8A; stroke-width: 3; stroke-linecap: round; flex-shrink: 0"><path d="M9 6h.01M15 6h.01M9 12h.01M15 12h.01M9 18h.01M15 18h.01"></path></svg>
+<span style="width: 20px; font-size: 14px; font-weight: 700; color: #B3B3B3; text-align: center">{{r.pos}}</span>
+<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px">
+<span style="font-size: 16px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{r.name}}</span>
+<sc-if value="{{r.isHead}}" hint-placeholder-val="{{ false }}"><span style="align-self: flex-start; font-size: 11px; font-weight: 700; color: #06121A; background: #5CC8FF; border-radius: 10px; padding: 1px 8px">Headliner</span></sc-if>
+</div>
+<sc-if value="{{r.canUp}}" hint-placeholder-val="{{ true }}">
+<button type="button" onClick="{{r.up}}" aria-label="Move {{r.name}} up" style="width: 44px; height: 44px; border: 0; border-radius: 22px; background: transparent; color: #FFFFFF; display: flex; align-items: center; justify-content: center"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" style="fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"><path d="M12 19V5M5 12l7-7 7 7"></path></svg></button>
+</sc-if>
+<sc-if value="{{r.isHead}}" hint-placeholder-val="{{ false }}"><span style="width: 44px; height: 44px"></span></sc-if>
+<button type="button" onClick="{{r.remove}}" aria-label="Remove {{r.name}}" style="width: 44px; height: 44px; border: 0; border-radius: 22px; background: transparent; color: #B3B3B3; display: flex; align-items: center; justify-content: center"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" style="fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"><path d="M18 6L6 18M6 6l12 12"></path></svg></button>
+</li>
+</sc-for>
+</ol>
+<sc-if value="{{empty}}" hint-placeholder-val="{{ false }}">
+<p style="margin: 0; padding: 16px; border: 1px dashed #3A3A3A; border-radius: 10px; font-size: 14px; color: #B3B3B3; text-align: center">Add at least one artist to continue.</p>
+</sc-if>
+<div style="display: flex; flex-direction: column; gap: 6px; margin-top: 16px">
+<label for="add-artist" style="font-size: 12px; font-weight: 700; color: #B3B3B3">Add an artist</label>
+<div style="display: flex; gap: 8px">
+<input id="add-artist" type="text" placeholder="Artist or band name" value="{{draft}}" onChange="{{onDraft}}" style="flex-grow: 1; min-width: 0; height: 44px; padding: 0 12px; background: #242424; border: 1px solid #3A3A3A; border-radius: 8px; color: #FFFFFF; font-size: 15px">
+<button type="button" onClick="{{add}}" style="height: 44px; padding: 0 18px; border: 1px solid #5CC8FF; border-radius: 22px; background: transparent; color: #5CC8FF; font-size: 15px; font-weight: 700">Add</button>
+</div>
+</div>
+</main>
+<div style="padding: 12px 20px 24px; background: #121212; border-top: 1px solid #222222">
+<sc-if value="{{hasArtists}}" hint-placeholder-val="{{ true }}">
+<a href="Details.dc.html" style="display: flex; align-items: center; justify-content: center; height: 52px; border-radius: 26px; background: #5CC8FF; color: #06121A; text-decoration: none; font-size: 16px; font-weight: 800">Continue · {{countText}}</a>
+</sc-if>
+<sc-if value="{{empty}}" hint-placeholder-val="{{ false }}">
+<button type="button" disabled style="width: 100%; height: 52px; border: 0; border-radius: 26px; background: #2A2A2A; color: #8A8A8A; font-size: 16px; font-weight: 800">Continue</button>
+</sc-if>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+constructor(props) {
+super(props);
+this.state = { artists: ['Phoebe Bridgers', 'MUNA', 'Sloppy Jane'], draft: '' };
+}
+renderVals() {
+const list = this.state.artists;
+const rows = list.map((name, i) => ({
+name: name,
+pos: i + 1,
+isHead: i === 0,
+canUp: i > 0,
+up: () => {
+const a = list.slice();
+const t = a[i - 1]; a[i - 1] = a[i]; a[i] = t;
+this.setState({ artists: a });
+},
+remove: () => this.setState({ artists: list.filter((_, j) => j !== i) })
+}));
+return {
+rows: rows,
+empty: list.length === 0,
+hasArtists: list.length > 0,
+countText: list.length === 1 ? '1 artist' : list.length + ' artists',
+draft: this.state.draft,
+onDraft: (e) => this.setState({ draft: e.target.value }),
+add: () => {
+const n = this.state.draft.trim();
+if (!n) return;
+this.setState({ artists: list.concat([n]), draft: '' });
+}
+};
+}
+}
+</script>
+</body>
+</html>

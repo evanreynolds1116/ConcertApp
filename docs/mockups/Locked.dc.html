@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Music Junkie – Private profile</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#121212}
+a{color:#5CC8FF}a:hover{color:#8FDBFF}
+button,input,select,textarea{font-family:inherit}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #121212; color: #FFFFFF; font-family: 'Figtree', system-ui, sans-serif; display: flex; flex-direction: column; overflow: hidden; position: relative">
+<main style="flex-grow: 1; overflow: hidden; display: flex; flex-direction: column">
+<header style="padding: 16px 20px 0 8px">
+<a href="People.dc.html" style="min-height: 44px; display: inline-flex; align-items: center; gap: 2px; padding: 0 12px 0 4px; color: #FFFFFF; text-decoration: none; font-size: 15px; font-weight: 600"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" style="fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"><path d="M15 18l-6-6 6-6"></path></svg>People</a>
+</header>
+<section style="padding: 24px 20px 0; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 6px">
+<span aria-hidden="true" style="width: 104px; height: 104px; border-radius: 52px; background: #7A5C3E; display: flex; align-items: center; justify-content: center; font-size: 36px; font-weight: 800">SP</span>
+<h1 style="margin: 10px 0 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em">Sam Patel</h1>
+<span style="font-size: 15px; color: #B3B3B3">@sampatel</span>
+<div style="margin-top: 14px; width: 100%">
+<sc-if value="{{isFollow}}" hint-placeholder-val="{{ true }}">
+<button type="button" onClick="{{toggle}}" style="width: 100%; height: 48px; border: 0; border-radius: 24px; background: #5CC8FF; color: #06121A; font-size: 16px; font-weight: 800">Follow</button>
+</sc-if>
+<sc-if value="{{isRequested}}" hint-placeholder-val="{{ false }}">
+<button type="button" onClick="{{toggle}}" aria-label="Requested, tap to cancel" style="width: 100%; height: 48px; border: 1px solid #5A5A5A; border-radius: 24px; background: transparent; color: #FFFFFF; font-size: 16px; font-weight: 800">Requested</button>
+</sc-if>
+</div>
+</section>
+<section style="margin: 28px 20px 0; padding: 28px 20px; border: 1px solid #282828; border-radius: 16px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 10px">
+<span aria-hidden="true" style="width: 56px; height: 56px; border-radius: 28px; border: 2px solid #FFFFFF; display: flex; align-items: center; justify-content: center"><svg viewBox="0 0 24 24" width="26" height="26" style="fill: none; stroke: #FFFFFF; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg></span>
+<h2 style="margin: 0; font-size: 18px; font-weight: 800">This account is private</h2>
+<p style="margin: 0; font-size: 15px; color: #B3B3B3; line-height: 1.4">{{message}}</p>
+</section>
+</main>
+<nav aria-label="Main" style="height: 76px; flex-shrink: 0; background: #181818; border-top: 1px solid #282828; display: flex; justify-content: space-around; align-items: center; box-sizing: border-box; padding: 0 8px 6px">
+<a href="Main.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-width: 60px; min-height: 52px; text-decoration: none; color: #8A8A8A; font-size: 11px; font-weight: 600"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" style="fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"></path></svg>Log</a>
+<a href="Stats.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-width: 60px; min-height: 52px; text-decoration: none; color: #8A8A8A; font-size: 11px; font-weight: 600"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" style="fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"><path d="M3 20h18M6 16v-5M11 16V6M16 16v-8"></path></svg>Stats</a>
+<a href="Feed.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-width: 60px; min-height: 52px; text-decoration: none; color: #8A8A8A; font-size: 11px; font-weight: 600"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" style="fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"><path d="M3 12h4l3-8 4 16 3-8h4"></path></svg>Feed</a>
+<a href="People.dc.html" aria-current="page" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-width: 60px; min-height: 52px; text-decoration: none; color: #FFFFFF; font-size: 11px; font-weight: 600"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" style="fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"><circle cx="9" cy="8" r="4"></circle><path d="M2 21c0-4 3-6 7-6s7 2 7 6M16 4a4 4 0 0 1 0 8M22 21c0-3-2-5-4-5.5"></path></svg>People</a>
+<a href="Profile.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-width: 60px; min-height: 52px; text-decoration: none; color: #8A8A8A; font-size: 11px; font-weight: 600"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" style="fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"><circle cx="12" cy="8" r="4"></circle><path d="M4 21c0-4 4-7 8-7s8 3 8 7"></path></svg>Profile</a>
+</nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+constructor(props) {
+super(props);
+this.state = { requested: false };
+}
+renderVals() {
+const r = this.state.requested;
+return {
+isFollow: !r,
+isRequested: r,
+toggle: () => this.setState({ requested: !r }),
+message: r ? 'Request sent. You’ll see Sam’s concerts, stats and activity once they accept.' : 'Follow Sam to see their concerts, stats and activity. They’ll need to accept your request.'
+};
+}
+}
+</script>
+</body>
+</html>

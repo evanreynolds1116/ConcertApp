@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Music Junkie – Your stats</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#121212}
+a{color:#5CC8FF}a:hover{color:#8FDBFF}
+button,input,select,textarea{font-family:inherit}
+</style>
+</helmet>
+<div style="width: 390px; height: 1640px; box-sizing: border-box; background: #121212; color: #FFFFFF; font-family: 'Figtree', system-ui, sans-serif; display: flex; flex-direction: column; overflow: hidden; position: relative">
+<main style="flex-grow: 1; overflow: hidden; padding: 24px 20px 24px; display: flex; flex-direction: column; gap: 28px">
+<header>
+<h1 style="margin: 0; font-size: 30px; font-weight: 800; letter-spacing: -0.02em">Your stats</h1>
+<p style="margin: 4px 0 0; font-size: 14px; color: #B3B3B3">All time · since Mar 2019</p>
+</header>
+<section aria-label="Totals" style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+<div style="grid-column: span 2; padding: 18px; background: #5CC8FF; color: #06121A; border-radius: 12px; display: flex; align-items: baseline; justify-content: space-between"><span style="font-size: 16px; font-weight: 700">Concerts</span><span style="font-size: 52px; font-weight: 800; line-height: 1">42</span></div>
+<div style="padding: 16px; background: #1E1E1E; border-radius: 12px; display: flex; flex-direction: column; gap: 4px"><span style="font-size: 34px; font-weight: 800; line-height: 1">118</span><span style="font-size: 14px; color: #B3B3B3; font-weight: 600">Artists</span></div>
+<div style="padding: 16px; background: #1E1E1E; border-radius: 12px; display: flex; flex-direction: column; gap: 4px"><span style="font-size: 34px; font-weight: 800; line-height: 1">23</span><span style="font-size: 14px; color: #B3B3B3; font-weight: 600">Venues</span></div>
+<div style="padding: 16px; background: #1E1E1E; border-radius: 12px; display: flex; flex-direction: column; gap: 4px"><span style="font-size: 34px; font-weight: 800; line-height: 1">14</span><span style="font-size: 14px; color: #B3B3B3; font-weight: 600">Cities</span></div>
+<div style="padding: 16px; background: #1E1E1E; border-radius: 12px; display: flex; flex-direction: column; gap: 4px"><span style="font-size: 34px; font-weight: 800; line-height: 1">8</span><span style="font-size: 14px; color: #B3B3B3; font-weight: 600">States</span></div>
+</section>
+<section aria-labelledby="money-h" style="padding: 18px; background: #16303E; border-radius: 12px; display: flex; flex-direction: column; gap: 6px">
+<h2 id="money-h" style="margin: 0; font-size: 14px; font-weight: 700; color: #C9D6DE">Money spent</h2>
+<span style="font-size: 42px; font-weight: 800; line-height: 1">$3,915</span>
+<span style="font-size: 14px; color: #C9D6DE">across 36 of 42 concerts with a ticket price</span>
+</section>
+<section aria-labelledby="cpy-h" style="display: flex; flex-direction: column; gap: 12px">
+<h2 id="cpy-h" style="margin: 0; font-size: 20px; font-weight: 800">Concerts per year</h2>
+<div style="display: flex; align-items: flex-end; gap: 8px; height: 170px; padding: 0 2px; border-bottom: 1px solid #333333">
+<sc-for list="{{concertBars}}" as="b" hint-placeholder-count="8">
+<div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 6px; height: 100%">
+<span style="font-size: 12px; font-weight: 700; color: #FFFFFF">{{b.label}}</span>
+<div style="width: 100%; max-width: 30px; height: {{b.h}}px; background: #5CC8FF; border-radius: 4px 4px 0 0"></div>
+</div>
+</sc-for>
+</div>
+<div style="display: flex; gap: 8px; padding: 0 2px">
+<sc-for list="{{concertBars}}" as="b" hint-placeholder-count="8"><span style="flex: 1; text-align: center; font-size: 11px; color: #B3B3B3; font-weight: 600">{{b.year}}</span></sc-for>
+</div>
+</section>
+<section aria-labelledby="spy-h" style="display: flex; flex-direction: column; gap: 12px">
+<h2 id="spy-h" style="margin: 0; font-size: 20px; font-weight: 800">Spend per year</h2>
+<div style="display: flex; align-items: flex-end; gap: 8px; height: 170px; padding: 0 2px; border-bottom: 1px solid #333333">
+<sc-for list="{{spendBars}}" as="b" hint-placeholder-count="8">
+<div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 6px; height: 100%" title="{{b.tip}}">
+<span style="font-size: 11px; font-weight: 700; color: #FFFFFF">{{b.label}}</span>
+<div style="width: 100%; max-width: 30px; height: {{b.h}}px; background: #5CC8FF; border-radius: 4px 4px 0 0"></div>
+</div>
+</sc-for>
+</div>
+<div style="display: flex; gap: 8px; padding: 0 2px">
+<sc-for list="{{spendBars}}" as="b" hint-placeholder-count="8"><span style="flex: 1; text-align: center; font-size: 11px; color: #B3B3B3; font-weight: 600">{{b.year}}</span></sc-for>
+</div>
+<p style="margin: 0; font-size: 12px; color: #8A8A8A">Only concerts with a ticket price are counted.</p>
+</section>
+<section aria-labelledby="lb-h" style="display: flex; flex-direction: column; gap: 12px">
+<h2 id="lb-h" style="margin: 0; font-size: 20px; font-weight: 800">Leaderboards</h2>
+<div role="group" aria-label="Leaderboard" style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px">
+<sc-for list="{{tabs}}" as="t" hint-placeholder-count="4">
+<sc-if value="{{t.active}}" hint-placeholder-val="{{ false }}">
+<button type="button" aria-pressed="true" style="height: 40px; border: 0; border-radius: 20px; background: #FFFFFF; color: #121212; font-size: 14px; font-weight: 700">{{t.label}}</button>
+</sc-if>
+<sc-if value="{{t.inactive}}" hint-placeholder-val="{{ true }}">
+<button type="button" aria-pressed="false" onClick="{{t.pick}}" style="height: 40px; border: 0; border-radius: 20px; background: #2A2A2A; color: #FFFFFF; font-size: 14px; font-weight: 600">{{t.label}}</button>
+</sc-if>
+</sc-for>
+</div>
+<ol style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column">
+<sc-for list="{{rows}}" as="r" hint-placeholder-count="6">
+<li>
+<a href="Main.dc.html" style="display: flex; align-items: center; gap: 14px; min-height: 60px; text-decoration: none; color: #FFFFFF">
+<span style="width: 18px; font-size: 15px; font-weight: 800; color: #B3B3B3; text-align: right">{{r.rank}}</span>
+<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px">
+<span style="font-size: 16px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{r.name}}</span>
+<div style="height: 4px; background: #282828; border-radius: 2px"><div style="width: {{r.w}}%; height: 4px; background: #5CC8FF; border-radius: 2px"></div></div>
+</div>
+<span style="min-width: 28px; font-size: 16px; font-weight: 800; text-align: right">{{r.count}}</span>
+</a>
+</li>
+</sc-for>
+</ol>
+</section>
+</main>
+<nav aria-label="Main" style="height: 76px; flex-shrink: 0; background: #181818; border-top: 1px solid #282828; display: flex; justify-content: space-around; align-items: center; box-sizing: border-box; padding: 0 8px 6px">
+<a href="Main.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-width: 60px; min-height: 52px; text-decoration: none; color: #8A8A8A; font-size: 11px; font-weight: 600"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" style="fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"></path></svg>Log</a>
+<a href="Stats.dc.html" aria-current="page" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-width: 60px; min-height: 52px; text-decoration: none; color: #FFFFFF; font-size: 11px; font-weight: 600"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" style="fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"><path d="M3 20h18M6 16v-5M11 16V6M16 16v-8"></path></svg>Stats</a>
+<a href="Feed.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-width: 60px; min-height: 52px; text-decoration: none; color: #8A8A8A; font-size: 11px; font-weight: 600"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" style="fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"><path d="M3 12h4l3-8 4 16 3-8h4"></path></svg>Feed</a>
+<a href="People.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-width: 60px; min-height: 52px; text-decoration: none; color: #8A8A8A; font-size: 11px; font-weight: 600"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" style="fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"><circle cx="9" cy="8" r="4"></circle><path d="M2 21c0-4 3-6 7-6s7 2 7 6M16 4a4 4 0 0 1 0 8M22 21c0-3-2-5-4-5.5"></path></svg>People</a>
+<a href="Profile.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-width: 60px; min-height: 52px; text-decoration: none; color: #8A8A8A; font-size: 11px; font-weight: 600"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" style="fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"><circle cx="12" cy="8" r="4"></circle><path d="M4 21c0-4 4-7 8-7s8 3 8 7"></path></svg>Profile</a>
+</nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1640}}'>
+class Component extends DCLogic {
+constructor(props) {
+super(props);
+this.state = { tab: 'artists' };
+}
+renderVals() {
+const years = [2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026];
+const concerts = [3, 0, 2, 6, 8, 9, 7, 7];
+const spend = [210, 0, 140, 520, 780, 910, 695, 660];
+const priced = [3, 0, 2, 5, 7, 8, 6, 5];
+const cMax = Math.max.apply(null, concerts);
+const sMax = Math.max.apply(null, spend);
+const concertBars = years.map((y, i) => ({ year: y, label: String(concerts[i]), h: Math.max(2, Math.round(concerts[i] / cMax * 120)) }));
+const spendBars = years.map((y, i) => ({ year: y, label: '$' + spend[i], h: Math.max(2, Math.round(spend[i] / sMax * 120)), tip: '$' + spend[i] + ' across ' + priced[i] + ' of ' + concerts[i] + ' concerts' }));
+const data = {
+artists: [['Phoebe Bridgers', 5], ['Khruangbin', 4], ['Mt. Joy', 3], ['Turnstile', 3], ['Hozier', 2], ['MUNA', 2]],
+venues: [['Ryman Auditorium', 7], ['Red Rocks Amphitheatre', 5], ['Great Stage Park', 4], ['The Anthem', 3], ['Brooklyn Steel', 2], ['The Fillmore', 2]],
+cities: [['Nashville, TN', 12], ['Morrison, CO', 5], ['Manchester, TN', 4], ['Chicago, IL', 3], ['Washington, DC', 3], ['Philadelphia, PA', 2]],
+states: [['TN', 16], ['CO', 6], ['IL', 5], ['NY', 4], ['DC', 3], ['PA', 3]]
+};
+const labels = [['artists', 'Artists'], ['venues', 'Venues'], ['cities', 'Cities'], ['states', 'States']];
+const tab = this.state.tab;
+const list = data[tab];
+const max = list[0][1];
+return {
+concertBars: concertBars,
+spendBars: spendBars,
+tabs: labels.map((l) => ({ label: l[1], active: l[0] === tab, inactive: l[0] !== tab, pick: () => this.setState({ tab: l[0] }) })),
+rows: list.map((r, i) => ({ rank: i + 1, name: r[0], count: r[1], w: Math.round(r[1] / max * 100) }))
+};
+}
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,25 @@
+{
+  "v": 3,
+  "createdOnFiles": {"v": 1, "at": "2026-09-30T22:45:00Z"},
+  "title": "Music Junkie — Mobile Mockups",
+  "launch": {"view": "canvas"},
+  "pages": [],
+  "boards": {
+    "Main.dc.html": {"x": 0, "y": 0, "w": 390, "h": 844, "title": "Log (home)", "is_interactive": true},
+    "Search.dc.html": {"x": 470, "y": 0, "w": 390, "h": 844, "title": "Add concert · 1 Search", "is_interactive": true},
+    "Lineup.dc.html": {"x": 940, "y": 0, "w": 390, "h": 844, "title": "Add concert · 2 Edit lineup", "is_interactive": true},
+    "Details.dc.html": {"x": 1410, "y": 0, "w": 390, "h": 844, "title": "Add concert · 3 Details", "is_interactive": true},
+    "Detail.dc.html": {"x": 1880, "y": 0, "w": 390, "h": 844, "title": "Concert detail", "is_interactive": true},
+    "Stats.dc.html": {"x": 0, "y": 1264, "w": 390, "h": 1640, "title": "Stats", "is_interactive": true},
+    "Feed.dc.html": {"x": 470, "y": 1264, "w": 390, "h": 844, "title": "Feed", "is_interactive": true},
+    "People.dc.html": {"x": 940, "y": 1264, "w": 390, "h": 844, "title": "People search", "is_interactive": true},
+    "Profile.dc.html": {"x": 1410, "y": 1264, "w": 390, "h": 844, "title": "Your profile", "is_interactive": true},
+    "Locked.dc.html": {"x": 1880, "y": 1264, "w": 390, "h": 844, "title": "Private profile (not following)", "is_interactive": true}
+  },
+  "order": ["Main.dc.html", "Search.dc.html", "Lineup.dc.html", "Details.dc.html", "Detail.dc.html", "Stats.dc.html", "Feed.dc.html", "People.dc.html", "Profile.dc.html", "Locked.dc.html"],
+  "notes": {
+    "row1": {"x": 0, "y": -300, "text": "Logging concerts", "kind": "title1", "maxW": 2270},
+    "row2": {"x": 0, "y": 964, "text": "Stats & social", "kind": "title1", "maxW": 2270}
+  },
+  "designSystems": []
+}
