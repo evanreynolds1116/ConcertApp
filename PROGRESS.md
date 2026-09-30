@@ -5,7 +5,7 @@
 
 ## Next step
 
-Before Phase 1: install Docker Desktop and check `pnpm db:start` brings up local Supabase (see Known issues). Also decide the two open questions under "Decisions made during the build" (Node upgrade; festival search approach). The festival one can wait until Phase 2.
+Before Phase 1: install Docker Desktop and check `pnpm db:start` brings up local Supabase (see Known issues). The festival search question under "Decisions made during the build" can wait until Phase 2.
 
 Then start Phase 1: migrations for every table in the data model, `can_view` and all RLS policies, activity triggers, seed data for the 3 users, and RLS tests. Pick an RLS test approach first: pgTAP through `supabase test db`, or Vitest against the local API with real signed-in users.
 
@@ -88,7 +88,7 @@ Record anything decided that isn't in the spec, with the date.
 - 2026-09-30: Local Supabase only for now (Supabase CLI as a dev dependency, run with `pnpm supabase`). The hosted project is created in Phase 6.
 - 2026-09-30: Nothing installed globally. Turbo, the Supabase CLI and tsx are root dev dependencies.
 - 2026-09-30: TypeScript pinned to `~6.0`, because typescript-eslint supports TypeScript below 6.1 (npm `latest` is 7.0).
-- 2026-09-30: Test tooling is Vitest 4 with Vite pinned to `^6` (override in `pnpm-workspace.yaml`), because Vitest 5 and Vite 7+ need Node 20.19+/22.12+ and this machine has Node 20.17.
+- 2026-09-30: Upgraded the dev machine from Node 20.17 (end-of-life) to Node 24.19 LTS, installed with winget from the official nodejs.org installer. The repo requires Node ≥ 24 (`engines`, `.node-version`). This removed the temporary Vite ^6 override, and tests now run on Vitest 5 and Vite 8.
 - 2026-09-30: pnpm 12 blocks dependency build scripts. Only `esbuild` and `supabase` are allowed (`allowBuilds` in `pnpm-workspace.yaml`); `sharp` and `unrs-resolver` are denied.
 - 2026-09-30: `packages/shared` exports TypeScript source directly (no build step). Next 16 transpiles workspace packages automatically.
 - 2026-09-30: Markdown is excluded from Prettier so the spec and docs keep their hand formatting.
@@ -102,7 +102,6 @@ Record anything decided that isn't in the spec, with the date.
 
 **Open questions (to decide):**
 
-- **Node upgrade.** Node 20 reached end-of-life in April 2026. Upgrading to Node 24 LTS (or 22) would let us drop the Vite override and use Vitest 5. It's a global install, so it's the user's call.
 - **Festival search (before Phase 2).** Two options:
   - Search `venueName=<festival name>` only, grouping results per day, and suggest searching the grounds (e.g. "Grant Park") when nothing matches.
   - Also keep a small hand-maintained map of major US festivals to their grounds venue IDs.
@@ -112,6 +111,5 @@ Record anything decided that isn't in the spec, with the date.
 ## Known issues
 
 - Docker Desktop isn't installed, so `pnpm db:start` hasn't been run. It's needed before Phase 1.
-- On Node 20.17, the Vite `^6` override in `pnpm-workspace.yaml` is required for `pnpm test` to work (see open questions).
 - The setlist.fm rate limit is undocumented. The second request of a run drew a 429 (AWS API Gateway, no `Retry-After`); retrying after 2 s worked.
 - setlist.fm data is crowd-sourced and patchy: many setlists have 0 songs, and Lollapalooza 2023 Saturday shows only 21 artists.

@@ -4,7 +4,7 @@
   "type": "module",
   "packageManager": "pnpm@12.6.0",
   "engines": {
-    "node": ">=20.9.0"
+    "node": ">=24"
   },
   "scripts": {
     "dev": "turbo run dev",
@@ -21,7 +21,7 @@
     "db:status": "supabase status"
   },
   "devDependencies": {
-    "@types/node": "^20.19.43",
+    "@types/node": "^24.19.0",
     "prettier": "^3.9.9",
     "supabase": "^2.118.0",
     "tsx": "^4.23.15",

@@ -30,7 +30,7 @@ pnpm workspaces + Turborepo · TypeScript everywhere · Next.js + Tailwind · Ex
 
 ## Commands
 
-Run everything from the repo root. Works in PowerShell and Git Bash on Windows. Needs Node ≥ 20.9 and pnpm (the version is pinned in `package.json`). Nothing is installed globally: Turbo, the Supabase CLI and tsx are dev dependencies.
+Run everything from the repo root. Works in PowerShell and Git Bash on Windows. Needs Node 24 LTS (see `.node-version`) and pnpm (the version is pinned in `package.json`). Nothing is installed globally: Turbo, the Supabase CLI and tsx are dev dependencies.
 
 | Task | Command |
 | --- | --- |

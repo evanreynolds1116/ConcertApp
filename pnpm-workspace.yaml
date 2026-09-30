@@ -19,7 +19,3 @@ minimumReleaseAgeExclude:
   - "@next/swc-win32-x64-msvc@16.3.8"
   - eslint-config-next@16.3.8
   - next@16.3.8
-# Stopgap for Node 20.17: Vite 7+/rolldown need Node >=20.19. Remove this (and move to
-# Vitest 5) once the dev machine is on Node 22.12+ or 24 LTS. See PROGRESS.md.
-overrides:
-  vite: ^6
