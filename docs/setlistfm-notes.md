@@ -122,3 +122,18 @@ Built in `supabase/functions/_shared/setlistfm/` (festival list in `festivals.ts
 - **Unlisted festivals** fall back to a plain venue-name search, one result per venue per day, named after what the user typed. "Outside Lands" finds nothing under any name we tried; manual entry covers it.
 - **Cost:** listing a big festival's days means paging through the year (20 setlists a page). Bonnaroo or Lollapalooza take about 7–8 s; Coachella, with two weekends plus Stagecoach first, about 12 s (it hits the 20-page cap, which is reported as `incomplete`). Results are cached in the function's memory for 10 minutes, so repeats are instant. That's in memory only, never stored.
 - **Search results don't show artist counts for concerts** (decided 2026-09-30): it would take one extra request per result. Festival days do show exact counts.
+
+## 2026-10-01 update: festivals that move, and touring festivals
+
+- **So What?! Music Festival** moves around Dallas-Fort Worth: Choctaw Stadium, Arlington (2022), Fair Park, Dallas (2023), Panther Island Pavilion, Fort Worth (2024). None of the venue names mention the festival, so a plain search found nothing. Each grounds hosts other shows, so known editions are matched by exact dates. The "Fair Park" search also matches "Music Hall at Fair Park", and the dates keep its shows out.
+- **setlist.fm's search has a `tourName` parameter**, and Warped Tour sets are tagged with it ("Vans Warped Tour 2018"). Matching is loose: "Warped Tour" finds every year. The tag is noisy:
+  - bands tag their own club shows and off-season dates with it
+  - tagged sets show up abroad (Australia, the UK); our client already limits to the US
+  - one tour year is 60+ pages (2018: 1,246 sets), so a whole year can't be listed
+- **Warped Tour is searched as a touring festival** (`touring` in `festivals.ts`):
+  - **Classic tours (1995–2018):** tour-tag search, one state at a time. Sets are grouped by city and date, which merges stages filed as separate venues (2018 Houston: "NRG Park" and "NRG Main Lot"). Groups with fewer than 5 artists, or outside May–August, are dropped. A state's year is 1–9 pages (2018 TX: 4 s; 2012 CA: 5 s). A state with no year searches every year, newest first, up to the 20-page cap (NJ: 12 s, back to 2014, reported as `incomplete`).
+  - **The stop's lineup** is every setlist at the stop's venues on that date (a `venues` lineup target), so untagged sets at the stop still count.
+  - **2019 anniversary and 2025–26 revival shows aren't tagged.** They're listed by venue and date: Atlantic City Beach and Shoreline Amphitheatre in 2019; RFK Stadium Grounds, Shoreline Waterfront and Tinker Field in 2025; Long Beach in 2026.
+  - **Long Beach 2026 files each stage as its own venue** named only "BeatBox Stage", "Ghost Stage" and so on. A venue-name search for "Stage" in Long Beach on those dates matches exactly the nine stages.
+  - **Without a state,** search shows the latest listed stops and asks for a state (`needsState`).
+- **setlist.fm groups Warped Tour into about 20 festival series** on its website, roughly one per city. The API doesn't expose them.

@@ -19,6 +19,7 @@ export function setlist(opts: {
   date: string;
   songs?: number;
   tapes?: number;
+  tour?: string;
 }): ApiSetlist {
   const [y, m, d] = opts.date.split("-");
   const id = String(nextId++);
@@ -43,6 +44,7 @@ export function setlist(opts: {
         country: { code: opts.country ?? "US", name: "United States" },
       },
     },
+    ...(opts.tour ? { tour: { name: opts.tour } } : {}),
     sets: {
       set: [
         {
@@ -77,6 +79,9 @@ export function fakeClient(all: ApiSetlist[]) {
           (s) => !q.venueName || s.venue.name.toLowerCase().includes(q.venueName.toLowerCase()),
         )
         .filter((s) => !q.venueId || s.venue.id === q.venueId)
+        .filter(
+          (s) => !q.tourName || !!s.tour?.name.toLowerCase().includes(q.tourName.toLowerCase()),
+        )
         .filter((s) => !q.cityName || s.venue.city?.name === q.cityName)
         .filter((s) => !q.stateCode || s.venue.city?.stateCode === q.stateCode)
         .filter((s) => !q.year || iso(s).startsWith(String(q.year)))

@@ -39,6 +39,10 @@ describe("parseRequest", () => {
     [{ action: "search", mode: "other", query: "phoebe" }, "mode"],
     [{ action: "lineup", target: { kind: "venue", venueId: "v1" }, date: "16-06-2024" }, "date"],
     [{ action: "lineup", target: { kind: "nope" }, date: "2024-06-16" }, "target"],
+    [
+      { action: "lineup", target: { kind: "venues", venueIds: [] }, date: "2024-06-16" },
+      "venueIds",
+    ],
     [{ action: "delete" }, "action"],
     [null, "JSON object"],
   ])("rejects %j", (body, message) => {
@@ -329,6 +333,192 @@ describe("searchFestivalDays", () => {
   });
 });
 
+describe("searchFestivalDays: touring festivals", () => {
+  const tagged = (opts: {
+    date: string;
+    city: string;
+    state: string;
+    venueId: string;
+    venue: string;
+    artists: number;
+    prefix?: string;
+  }) =>
+    Array.from({ length: opts.artists }, (_, i) =>
+      setlist({
+        artist: `${opts.prefix ?? opts.venue} act ${i}`,
+        venueId: opts.venueId,
+        venue: opts.venue,
+        city: opts.city,
+        state: opts.state,
+        date: opts.date,
+        tour: `Vans Warped Tour ${opts.date.slice(0, 4)}`,
+      }),
+    );
+  const warped = [
+    // Houston 2018: two stages filed as separate venues.
+    ...tagged({
+      date: "2018-07-08",
+      city: "Houston",
+      state: "TX",
+      venueId: "nrg",
+      venue: "NRG Park",
+      artists: 6,
+    }),
+    ...tagged({
+      date: "2018-07-08",
+      city: "Houston",
+      state: "TX",
+      venueId: "lot",
+      venue: "NRG Main Lot",
+      artists: 2,
+    }),
+    ...tagged({
+      date: "2018-07-06",
+      city: "Dallas",
+      state: "TX",
+      venueId: "dos",
+      venue: "Dos Equis Pavilion",
+      artists: 7,
+    }),
+    // A band's own club show tagged with the tour: too few sets to be a stop.
+    ...tagged({
+      date: "2018-07-20",
+      city: "Austin",
+      state: "TX",
+      venueId: "club",
+      venue: "Mohawk",
+      artists: 1,
+    }),
+    // Off-season and revival-era sets tagged with the tour don't count.
+    ...tagged({
+      date: "2018-11-02",
+      city: "Dallas",
+      state: "TX",
+      venueId: "dos",
+      venue: "Dos Equis Pavilion",
+      artists: 6,
+    }),
+    ...tagged({
+      date: "2025-11-12",
+      city: "Austin",
+      state: "TX",
+      venueId: "club",
+      venue: "Mohawk",
+      artists: 6,
+    }),
+    ...tagged({
+      date: "2012-06-30",
+      city: "Dallas",
+      state: "TX",
+      venueId: "gex",
+      venue: "Gexa Energy Pavilion",
+      artists: 5,
+    }),
+    // 2025 revival: filed by venue, not tagged.
+    ...Array.from({ length: 4 }, (_, i) =>
+      setlist({
+        artist: `DC act ${i}`,
+        venueId: "13d619f1",
+        venue: "RFK Stadium Grounds",
+        city: "Washington",
+        state: "DC",
+        date: "2025-06-15",
+      }),
+    ),
+    ...Array.from({ length: 3 }, (_, i) =>
+      setlist({
+        artist: `LB act ${i}`,
+        venueId: "1bdee124",
+        venue: "BeatBox Stage",
+        city: "Long Beach",
+        state: "CA",
+        date: "2026-07-25",
+      }),
+    ),
+  ];
+
+  it("finds a classic year's stops in a state, merging stages into one stop", async () => {
+    const { client, queries } = fakeClient(warped);
+    const r = await searchFestivalDays(
+      { client, now: NOW },
+      search("vans warped tour", { mode: "festival", year: 2018, state: "TX" }),
+    );
+    expect(queries[0]).toMatchObject({ tourName: "Warped Tour", stateCode: "TX", year: 2018 });
+    expect(
+      r.results.map((d) => [
+        d.date,
+        d.festivalName,
+        d.dayLabel,
+        d.venue.name,
+        d.artistCount,
+        d.target,
+      ]),
+    ).toEqual([
+      [
+        "2018-07-06",
+        "Warped Tour",
+        "",
+        "Dos Equis Pavilion",
+        7,
+        { kind: "venues", venueIds: ["dos"] },
+      ],
+      [
+        "2018-07-08",
+        "Warped Tour",
+        "",
+        "NRG Park",
+        8,
+        { kind: "venues", venueIds: ["nrg", "lot"] },
+      ],
+    ]);
+    expect(r.needsState).toBe(false);
+  });
+
+  it("searches every tagged year in a state when no year is picked, latest first", async () => {
+    const { client } = fakeClient(warped);
+    const r = await searchFestivalDays(
+      { client, now: NOW },
+      search("Warped Tour", { mode: "festival", state: "TX" }),
+    );
+    expect(r.results.map((d) => [d.date, d.venue.city])).toEqual([
+      ["2018-07-08", "Houston"],
+      ["2018-07-06", "Dallas"],
+      ["2012-06-30", "Dallas"],
+    ]);
+  });
+
+  it("without a state, shows the latest listed stops and asks for a state", async () => {
+    const { client } = fakeClient(warped);
+    const r = await searchFestivalDays(
+      { client, now: NOW },
+      search("warped", { mode: "festival" }),
+    );
+    expect(r.results.map((d) => [d.date, d.dayLabel, d.venue.name, d.artistCount])).toEqual([
+      ["2026-07-25", "Day 1", "Shoreline Waterfront", 3],
+    ]);
+    expect(r.results[0]!.target).toEqual({
+      kind: "venue-search",
+      venueName: "Stage",
+      cityName: "Long Beach",
+      stateCode: "CA",
+    });
+    expect(r.needsState).toBe(true);
+  });
+
+  it("finds a revival year's stops by venue, without needing a state", async () => {
+    const { client, queries } = fakeClient(warped);
+    const r = await searchFestivalDays(
+      { client, now: NOW },
+      search("Warped Tour", { mode: "festival", year: 2025 }),
+    );
+    expect(r.results.map((d) => [d.date, d.dayLabel, d.venue.name])).toEqual([
+      ["2025-06-15", "Day 2", "RFK Stadium Grounds"],
+    ]);
+    expect(r.needsState).toBe(false);
+    expect(queries.every((q) => !q.tourName)).toBe(true);
+  });
+});
+
 describe("getLineup", () => {
   it("collects every page, dedupes artists and orders the lineup", async () => {
     const data = [
@@ -355,6 +545,24 @@ describe("getLineup", () => {
     expect(r.artists).toHaveLength(26);
     expect(r.artists[0]).toMatchObject({ name: "Headliner", songCount: 20 });
     expect(r.setlistfmUrl).toMatch(/^https:\/\/www\.setlist\.fm\/setlist\//);
+  });
+
+  it("collects every stage of a touring festival stop", async () => {
+    const data = [
+      setlist({ artist: "Main", venueId: "nrg", date: "2018-07-08", songs: 9 }),
+      setlist({ artist: "Side", venueId: "lot", date: "2018-07-08", songs: 5 }),
+      setlist({ artist: "Elsewhere", venueId: "other", date: "2018-07-08", songs: 5 }),
+    ];
+    const { client } = fakeClient(data);
+    const r = await getLineup(
+      { client, now: NOW },
+      {
+        action: "lineup",
+        target: { kind: "venues", venueIds: ["nrg", "lot"] },
+        date: "2018-07-08",
+      },
+    );
+    expect(r.artists.map((a) => a.name)).toEqual(["Main", "Side"]);
   });
 
   it("puts the searched artist first", async () => {

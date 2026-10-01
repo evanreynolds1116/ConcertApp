@@ -16,6 +16,8 @@ export type ApiSetlist = {
   url: string;
   artist: { mbid: string; name: string; url?: string };
   venue: ApiVenue;
+  /** The tour the artist tagged this set with, e.g. "Vans Warped Tour 2018". */
+  tour?: { name: string };
   sets?: { set?: { song?: ApiSong[] }[] };
 };
 export type SetlistPage = {
@@ -31,6 +33,7 @@ export type SetlistQuery = {
   venueId?: string;
   cityName?: string;
   stateCode?: string;
+  tourName?: string;
   year?: number;
   date?: string; // dd-MM-yyyy
   p?: number;

@@ -19,6 +19,14 @@ export type FestivalSite = {
   grounds: UsVenue;
 };
 
+/** A touring festival's stop in a year it's found by venue, like a one-site festival. */
+export type TourStop = {
+  /** First and last festival day, ISO. */
+  from: string;
+  to: string;
+  site: FestivalSite;
+};
+
 export type Festival = {
   name: string;
   /** Lowercase search terms, besides the name. */
@@ -29,6 +37,12 @@ export type Festival = {
   months: number[];
   /** Whether an ISO date is a festival day, as opposed to another event at the grounds. */
   isFestivalDate: (iso: string) => boolean;
+  /**
+   * Touring festivals: a different city each date, so `sites` is empty. In `tagYears` the
+   * stops are found through setlist.fm's tour name (artists tag their sets with it), one state
+   * at a time; `stops` lists the other years' shows by venue.
+   */
+  touring?: { tourName: string; tagYears: [number, number]; stops: TourStop[] };
 };
 
 function venue(setlistfmId: string | null, name: string, city: string, state: string): UsVenue {
@@ -255,7 +269,67 @@ export const FESTIVALS: Festival[] = [
       );
     },
   },
+  {
+    name: "Warped Tour",
+    aliases: ["vans warped tour", "the warped tour"],
+    sites: [],
+    // The classic summer tour; isFestivalDate drops sets tagged with the tour off-season.
+    months: [5, 6, 7, 8],
+    isFestivalDate: inMonths(5, 6, 7, 8),
+    touring: {
+      tourName: "Warped Tour",
+      tagYears: [1995, 2018],
+      // Anniversary and revival shows aren't tagged with the tour; setlist.fm files them by venue.
+      stops: [
+        // Each stage is its own venue ("BeatBox Stage"); "Stage" in Long Beach matches all nine.
+        stop(
+          "2026-07-25",
+          "2026-07-26",
+          "Shoreline Waterfront",
+          "Long Beach",
+          "CA",
+          "1bdee124",
+          "Stage",
+        ),
+        stop("2025-11-15", "2025-11-16", "Tinker Field", "Orlando", "FL", "23d62cb7"),
+        stop("2025-07-26", "2025-07-27", "Shoreline Waterfront", "Long Beach", "CA", "1bdee124"),
+        stop("2025-06-14", "2025-06-15", "RFK Stadium Grounds", "Washington", "DC", "13d619f1"),
+        stop(
+          "2019-07-20",
+          "2019-07-21",
+          "Shoreline Amphitheatre",
+          "Mountain View",
+          "CA",
+          "5bd6d7b4",
+        ),
+        stop("2019-06-29", "2019-06-30", "Atlantic City Beach", "Atlantic City", "NJ", "73d41eb5"),
+      ],
+    },
+  },
 ];
+
+/**
+ * A touring festival stop at one venue. Every stage must match the venue-name search: the
+ * venue's name unless `searchName` is given.
+ */
+function stop(
+  from: string,
+  to: string,
+  name: string,
+  city: string,
+  state: string,
+  setlistfmId: string,
+  searchName = name,
+): TourStop {
+  return {
+    from,
+    to,
+    site: {
+      search: { venueName: searchName, cityName: city, stateCode: state },
+      grounds: venue(setlistfmId, name, city, state),
+    },
+  };
+}
 
 // A query made only of these (plus years) names no festival in particular.
 const GENERIC_WORDS = new Set(["festival", "fest", "music", "and", "arts", "the", "of"]);

@@ -12,12 +12,14 @@ export type UsVenue = {
 };
 
 /**
- * How to fetch a lineup: every setlist at one venue on a date (a concert), or every setlist
- * matching a venue-name search on a date (a festival whose stages are filed as separate venues).
+ * How to fetch a lineup: every setlist at one venue on a date (a concert), every setlist
+ * matching a venue-name search on a date (a festival whose stages are filed as separate
+ * venues), or every setlist at a few venues on a date (a touring festival's stop).
  */
 export type LineupTarget =
   | { kind: "venue"; venueId: string }
-  | { kind: "venue-search"; venueName: string; cityName: string | null; stateCode: string | null };
+  | { kind: "venue-search"; venueName: string; cityName: string | null; stateCode: string | null }
+  | { kind: "venues"; venueIds: string[] };
 
 export type ConcertResult = {
   kind: "concert";
@@ -38,7 +40,8 @@ export type FestivalDayResult = {
   /** The festival grounds; every log of this day is saved against this venue. */
   venue: UsVenue;
   festivalName: string;
-  /** "Day 2", or "Weekend 2 · Day 1" for festivals that run over two weekends. */
+  /** "Day 2", or "Weekend 2 · Day 1" for festivals that run over two weekends. Empty for a
+   * one-day touring festival stop. */
   dayLabel: string;
   artistCount: number;
   target: LineupTarget;
@@ -61,6 +64,8 @@ export type SearchResponse = {
   nextPage: number | null;
   /** True when setlist.fm had more than we could fetch; narrow the search to see the rest. */
   incomplete: boolean;
+  /** Festival mode: a touring festival whose older stops are searched one state at a time. */
+  needsState?: boolean;
 };
 
 export type LineupRequest = {

@@ -21,6 +21,8 @@ describe("findFestival", () => {
     ["bottle rock", "BottleRock Napa Valley"],
     ["So What", "So What?! Music Festival"],
     ["so what?! 2024", "So What?! Music Festival"],
+    ["Warped Tour", "Warped Tour"],
+    ["vans warped tour 2018", "Warped Tour"],
   ])("%s -> %s", (query, name) => {
     expect(findFestival(query)?.name).toBe(name);
   });

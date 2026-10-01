@@ -2,6 +2,7 @@
 
 import {
   EARLIEST_YEAR,
+  festivalLabel,
   formatCityState,
   formatShowDate,
   US_STATES,
@@ -39,6 +40,7 @@ type Results =
       results: SearchResult[];
       nextPage: number | null;
       incomplete: boolean;
+      needsState?: boolean;
       loadingMore?: boolean;
     };
 
@@ -138,6 +140,7 @@ export function SearchStep({
           results: [...results.results, ...more.results],
           nextPage: more.nextPage,
           incomplete: more.incomplete,
+          needsState: more.needsState,
         },
       });
     } catch (e) {
@@ -165,7 +168,7 @@ export function SearchStep({
           setlistfmId: result.venue.setlistfmId,
         },
         festivalName: result.kind === "festival-day" ? result.festivalName : null,
-        festivalDayLabel: result.kind === "festival-day" ? result.dayLabel : null,
+        festivalDayLabel: result.kind === "festival-day" ? result.dayLabel || null : null,
         setlistfmUrl:
           lineup.setlistfmUrl ?? (result.kind === "concert" ? result.setlistfmUrl : null),
         artists: lineup.artists.map((a) =>
@@ -368,6 +371,13 @@ function ResultsView({ results, isFestival, picking, onPick, onLoadMore }: Resul
       </p>
     );
   }
+  // Touring festivals (Warped Tour) search their older stops one state at a time.
+  const pickState = results.needsState && (
+    <p className="py-3 text-center text-muted">
+      This festival toured a different city every day. Pick a state to find your stop.
+    </p>
+  );
+  if (results.results.length === 0 && pickState) return pickState;
   if (results.results.length === 0) {
     return (
       <p className="py-6 text-center text-muted">
@@ -397,7 +407,9 @@ function ResultsView({ results, isFestival, picking, onPick, onLoadMore }: Resul
               <span className="flex min-w-0 flex-1 flex-col gap-0.5">
                 <span className="sr-only">{formatShowDate(r.date)}:</span>
                 <span className="truncate font-bold">
-                  {r.kind === "festival-day" ? `${r.festivalName} · ${r.dayLabel}` : r.title}
+                  {r.kind === "festival-day"
+                    ? festivalLabel(r.festivalName, r.dayLabel || null)
+                    : r.title}
                 </span>
                 <span className="truncate text-sm text-muted">{r.venue.name}</span>
                 <span className="truncate text-sm text-muted">
@@ -423,6 +435,7 @@ function ResultsView({ results, isFestival, picking, onPick, onLoadMore }: Resul
           </li>
         ))}
       </ul>
+      {pickState}
       {results.incomplete && (
         <p className="mt-2 text-sm text-muted">
           setlist.fm had more than we could check. If your day is missing, pick a year or month.

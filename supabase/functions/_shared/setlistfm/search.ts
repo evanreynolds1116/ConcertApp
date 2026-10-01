@@ -10,7 +10,7 @@ import type {
   SetlistSearchRequest,
   UsVenue,
 } from "./contract.ts";
-import { findFestival, siteForYear } from "./festivals.ts";
+import { type Festival, findFestival, siteForYear } from "./festivals.ts";
 import {
   buildLineup,
   songCount,
@@ -29,6 +29,8 @@ const LINEUP_MAX_PAGES = 10;
 const CONCERT_RESULTS_TARGET = 15; // stop paging once a month-filtered page has this many
 const MIN_FESTIVAL_DAY_ARTISTS = 8; // a listed festival's year needs a day at least this big
 const SMALL_DAY_FRACTION = 0.2; // listed festivals: hide days under 20% of the busiest day
+const MIN_TOUR_STOP_ARTISTS = 5; // touring festivals: fewer tagged sets is a band's own show
+const MAX_LINEUP_VENUES = 10; // a touring festival stop's stages
 
 type Ctx = { client: SetlistFmClient; now: number };
 type ConcertSearchResponse = Omit<SearchResponse, "results"> & { results: ConcertResult[] };
@@ -97,8 +99,16 @@ export function parseRequest(body: unknown, nowMs: number): SetlistSearchRequest
         cityName: t.cityName == null ? null : requiredText(t.cityName, "target.cityName"),
         stateCode,
       };
+    } else if (t?.kind === "venues") {
+      const ids = t.venueIds;
+      if (!Array.isArray(ids) || ids.length === 0 || ids.length > MAX_LINEUP_VENUES)
+        throw new BadRequest(`target.venueIds must list 1 to ${MAX_LINEUP_VENUES} venues`);
+      target = {
+        kind: "venues",
+        venueIds: ids.map((id) => requiredText(id, "target.venueIds", 40)),
+      };
     } else {
-      throw new BadRequest("target must be a venue or a venue search");
+      throw new BadRequest("target must be a venue, a venue search or a list of venues");
     }
     const mbid = b.searchedArtistMbid;
     if (mbid != null && (typeof mbid !== "string" || mbid.length > 64))
@@ -207,6 +217,7 @@ export async function searchFestivalDays(
   req: SearchRequest,
 ): Promise<FestivalSearchResponse> {
   const festival = findFestival(req.query);
+  if (festival?.touring) return searchTourStops(ctx, req, festival, festival.touring);
   const site = festival ? siteForYear(festival, req.year) : null;
   if (festival && !site) return { results: [], nextPage: null, incomplete: false }; // e.g. Riot Fest before 2015
   if (site && req.state && site.grounds.state !== req.state)
@@ -335,6 +346,135 @@ export async function searchFestivalDays(
   return { results, nextPage: null, incomplete };
 }
 
+// ---------------------------------------------------------------------------------------------
+// Touring festivals: one result per stop
+// ---------------------------------------------------------------------------------------------
+
+async function searchTourStops(
+  ctx: Ctx,
+  req: SearchRequest,
+  festival: Festival,
+  touring: NonNullable<Festival["touring"]>,
+): Promise<FestivalSearchResponse> {
+  const today = usToday(ctx.now);
+  const yearOf = (iso: string) => Number(iso.slice(0, 4));
+  const inMonth = (iso: string) => !req.month || Number(iso.slice(5, 7)) === req.month;
+  const results: FestivalDayResult[] = [];
+
+  // Stops listed by venue: the year asked for, every year in the state asked for, or else the
+  // latest year with a stop.
+  const listed = touring.stops.filter((s) => s.from <= today);
+  const latestYear = Math.max(...listed.map((s) => yearOf(s.from)));
+  const stops = listed.filter(
+    (s) =>
+      (req.year ? yearOf(s.from) === req.year : req.state || yearOf(s.from) === latestYear) &&
+      (!req.state || s.site.grounds.state === req.state),
+  );
+  for (const { from, to, site } of stops) {
+    const days = isoRange(from, to);
+    for (const [i, iso] of days.entries()) {
+      if (iso > today || !inMonth(iso)) continue;
+      const page = await ctx.client.searchSetlists({
+        ...site.search,
+        cityName: site.search.cityName ?? undefined,
+        date: toApiDate(iso),
+      });
+      if (page.total === 0) continue;
+      const url = page.setlists.find((s) => s.venue.id === site.grounds.setlistfmId)?.venue.url;
+      results.push({
+        kind: "festival-day",
+        key: `${site.grounds.setlistfmId}|${iso}`,
+        date: iso,
+        venue: { ...site.grounds, url: url ?? null },
+        festivalName: festival.name,
+        dayLabel: days.length > 1 ? `Day ${i + 1}` : "",
+        artistCount: page.total,
+        target: {
+          kind: "venue-search",
+          venueName: site.search.venueName,
+          cityName: site.search.cityName,
+          stateCode: site.search.stateCode,
+        },
+      });
+    }
+  }
+
+  // Tagged years: every set tagged with the tour in the state, grouped into stops by city and
+  // date (stages can be filed as separate venues). Too many pages without a state.
+  const [firstTagYear, lastTagYear] = touring.tagYears;
+  const wantsTagYears = !req.year || (req.year >= firstTagYear && req.year <= lastTagYear);
+  let incomplete = false;
+  if (wantsTagYears && req.state) {
+    type Stop = {
+      iso: string;
+      artists: Set<string>;
+      venues: Map<string, { venue: UsVenue; sets: number }>;
+    };
+    const byStop = new Map<string, Stop>();
+    incomplete = true;
+    for (let p = 1; p <= FESTIVAL_MAX_PAGES; p++) {
+      const r = await ctx.client.searchSetlists({
+        tourName: touring.tourName,
+        stateCode: req.state,
+        year: req.year,
+        p,
+      });
+      for (const s of r.setlists) {
+        const iso = toIsoDate(s.eventDate);
+        const venue = toUsVenue(s.venue);
+        if (!iso || !venue?.setlistfmId || iso > today || !inMonth(iso)) continue;
+        if (yearOf(iso) < firstTagYear || yearOf(iso) > lastTagYear) continue;
+        if (!festival.isFestivalDate(iso)) continue;
+        const key = `${venue.city}|${venue.state}|${iso}`;
+        const stop = byStop.get(key) ?? { iso, artists: new Set<string>(), venues: new Map() };
+        stop.artists.add(s.artist.mbid || s.artist.name.toLowerCase());
+        const v = stop.venues.get(venue.setlistfmId) ?? { venue, sets: 0 };
+        v.sets++;
+        stop.venues.set(venue.setlistfmId, v);
+        byStop.set(key, stop);
+      }
+      if (p * r.itemsPerPage >= r.total) {
+        incomplete = false;
+        break;
+      }
+    }
+    for (const stop of byStop.values()) {
+      if (stop.artists.size < MIN_TOUR_STOP_ARTISTS) continue;
+      // Saved against the stage with the most sets, so everyone at the stop shares one show.
+      const venues = [...stop.venues.values()].sort((a, b) => b.sets - a.sets);
+      const grounds = venues[0]!.venue;
+      results.push({
+        kind: "festival-day",
+        key: `${grounds.setlistfmId}|${stop.iso}`,
+        date: stop.iso,
+        venue: grounds,
+        festivalName: festival.name,
+        dayLabel: "",
+        artistCount: stop.artists.size,
+        target: {
+          kind: "venues",
+          venueIds: venues.slice(0, MAX_LINEUP_VENUES).map((v) => v.venue.setlistfmId!),
+        },
+      });
+    }
+  }
+
+  // A year's stops in tour order; across years, the latest first.
+  results.sort((a, b) => (req.year ? 1 : -1) * a.date.localeCompare(b.date));
+  return { results, nextPage: null, incomplete, needsState: wantsTagYears && !req.state };
+}
+
+/** Every ISO date from `from` to `to`, inclusive. */
+function isoRange(from: string, to: string): string[] {
+  const days = [from];
+  while (days.at(-1)! < to) {
+    const d = new Date(`${days.at(-1)}T00:00:00Z`);
+    d.setUTCDate(d.getUTCDate() + 1);
+    days.push(d.toISOString().slice(0, 10));
+  }
+  return days;
+}
+
 function daysBetween(a: string, b: string): number {
   return Math.round((Date.parse(`${b}T00:00:00Z`) - Date.parse(`${a}T00:00:00Z`)) / 86_400_000);
 }
@@ -344,19 +484,26 @@ function daysBetween(a: string, b: string): number {
 // ---------------------------------------------------------------------------------------------
 
 export async function getLineup(ctx: Ctx, req: LineupRequest): Promise<LineupResponse> {
-  const query: SetlistQuery =
-    req.target.kind === "venue"
-      ? { venueId: req.target.venueId }
-      : {
-          venueName: req.target.venueName,
-          cityName: req.target.cityName ?? undefined,
-          stateCode: req.target.stateCode ?? undefined,
-        };
+  const t = req.target;
+  const queries: SetlistQuery[] =
+    t.kind === "venue"
+      ? [{ venueId: t.venueId }]
+      : t.kind === "venues"
+        ? t.venueIds.map((venueId) => ({ venueId }))
+        : [
+            {
+              venueName: t.venueName,
+              cityName: t.cityName ?? undefined,
+              stateCode: t.stateCode ?? undefined,
+            },
+          ];
   const setlists: ApiSetlist[] = [];
-  for (let p = 1; p <= LINEUP_MAX_PAGES; p++) {
-    const r = await ctx.client.searchSetlists({ ...query, date: toApiDate(req.date), p });
-    setlists.push(...r.setlists);
-    if (p * r.itemsPerPage >= r.total || r.setlists.length === 0) break;
+  for (const query of queries) {
+    for (let p = 1; p <= LINEUP_MAX_PAGES; p++) {
+      const r = await ctx.client.searchSetlists({ ...query, date: toApiDate(req.date), p });
+      setlists.push(...r.setlists);
+      if (p * r.itemsPerPage >= r.total || r.setlists.length === 0) break;
+    }
   }
   const artists = buildLineup(setlists, req.searchedArtistMbid);
   const lead = artists[0];

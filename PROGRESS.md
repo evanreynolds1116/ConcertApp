@@ -221,6 +221,11 @@ Record anything decided that isn't in the spec, with the date.
   - on phones the tabs sit on a second row
 - 2026-10-01 (Phase 5): Deleting an account is confirmed by typing your username. The server removes the user's avatar files, then calls `delete_account()`, which deletes the auth user; everything else cascades.
 - 2026-10-01 (Phase 5): Seed data now has realistic feed timestamps: each concert is logged the evening after the show, and the follows are dated in September 2026.
+- 2026-10-01 (manual testing): Added So What?! Music Festival to the festival list. It moves around Dallas-Fort Worth, and known editions are matched by exact dates.
+- 2026-10-01 (manual testing): Warped Tour is supported as a touring festival, approved by the user (details in `docs/setlistfm-notes.md`):
+  - 1995–2018 stops are found through setlist.fm's tour tag, one state at a time
+  - the 2019 and 2025–26 shows are listed by venue
+  - each stop is one result, saved against its busiest stage, with no day label when it's a single day
 
 **Open questions (to decide):**
 
