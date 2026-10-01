@@ -380,6 +380,23 @@ describe("searchFestivalDays: touring festivals", () => {
       venue: "Dos Equis Pavilion",
       artists: 7,
     }),
+    // San Antonio: most sets filed under a placeholder venue, the rest under the real one.
+    ...tagged({
+      date: "2018-07-07",
+      city: "San Antonio",
+      state: "TX",
+      venueId: "lot2",
+      venue: "Parking Lot",
+      artists: 6,
+    }),
+    ...tagged({
+      date: "2018-07-07",
+      city: "San Antonio",
+      state: "TX",
+      venueId: "att",
+      venue: "AT&T Center",
+      artists: 2,
+    }),
     // A band's own club show tagged with the tour: too few sets to be a stop.
     ...tagged({
       date: "2018-07-20",
@@ -463,6 +480,14 @@ describe("searchFestivalDays: touring festivals", () => {
         { kind: "venues", venueIds: ["dos"] },
       ],
       [
+        "2018-07-07",
+        "Warped Tour",
+        "",
+        "AT&T Center",
+        8,
+        { kind: "venues", venueIds: ["lot2", "att"] },
+      ],
+      [
         "2018-07-08",
         "Warped Tour",
         "",
@@ -482,6 +507,7 @@ describe("searchFestivalDays: touring festivals", () => {
     );
     expect(r.results.map((d) => [d.date, d.venue.city])).toEqual([
       ["2018-07-08", "Houston"],
+      ["2018-07-07", "San Antonio"],
       ["2018-07-06", "Dallas"],
       ["2012-06-30", "Dallas"],
     ]);

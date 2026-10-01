@@ -18,6 +18,13 @@ const TABS: { kind: LeaderboardKind; label: string }[] = [
 ];
 
 const STATE_NAMES = new Map<string, string>(US_STATES);
+const TOP = 10; // rows shown before "Show all"
+const NOUNS: Record<LeaderboardKind, string> = {
+  artist: "artists",
+  venue: "venues",
+  city: "cities",
+  state: "states",
+};
 
 /** Where a row links: the log, filtered to that artist, venue, city or state. */
 function rowFilters(kind: LeaderboardKind, row: LeaderboardRow): LogFilters {
@@ -57,6 +64,7 @@ export function Leaderboards({
   logPath: string;
 }) {
   const [selected, setSelected] = useState<LeaderboardKind>("artist");
+  const [expanded, setExpanded] = useState<LeaderboardKind | null>(null);
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
   // Arrow keys move between tabs (WAI-ARIA tabs pattern).
@@ -79,6 +87,8 @@ export function Leaderboards({
 
   const rows = boards[selected];
   const max = Math.max(1, ...rows.map((r) => r.concerts));
+  const showAll = expanded === selected || rows.length <= TOP;
+  const shown = showAll ? rows : rows.slice(0, TOP);
   return (
     <section aria-labelledby="lb-h" className="flex flex-col gap-3">
       <h2 id="lb-h" className="text-xl font-extrabold">
@@ -107,7 +117,7 @@ export function Leaderboards({
       </div>
       <div role="tabpanel" id="lb-panel" aria-labelledby={`lb-tab-${selected}`}>
         <ol>
-          {rows.map((row) => {
+          {shown.map((row) => {
             // Ties share a rank: 1, 1, 3.
             const rank = 1 + rows.filter((r) => r.concerts > row.concerts).length;
             const { name, detail } = rowTitle(selected, row);
@@ -140,6 +150,16 @@ export function Leaderboards({
             );
           })}
         </ol>
+        {rows.length > TOP && (
+          <button
+            type="button"
+            onClick={() => setExpanded(showAll ? null : selected)}
+            aria-expanded={showAll}
+            className="mt-2 h-11 w-full rounded-full border border-surface-raised text-sm font-bold hover:border-foreground"
+          >
+            {showAll ? `Show top ${TOP}` : `Show all ${rows.length} ${NOUNS[selected]}`}
+          </button>
+        )}
       </div>
     </section>
   );

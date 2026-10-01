@@ -226,6 +226,8 @@ Record anything decided that isn't in the spec, with the date.
   - 1995–2018 stops are found through setlist.fm's tour tag, one state at a time
   - the 2019 and 2025–26 shows are listed by venue
   - each stop is one result, saved against its busiest stage, with no day label when it's a single day
+  - placeholder venue names ("Parking Lot") are skipped when the stop has a real venue, so San Diego 2018 is saved as SDCCU Stadium
+- 2026-10-01 (manual testing): Leaderboards show the top 10 rows with a "Show all" button, approved by the user. The spec says every item is listed; with 173 artists that made Stats very long. Ranks still count every row.
 
 **Open questions (to decide):**
 

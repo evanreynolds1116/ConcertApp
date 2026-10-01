@@ -31,6 +31,9 @@ const MIN_FESTIVAL_DAY_ARTISTS = 8; // a listed festival's year needs a day at l
 const SMALL_DAY_FRACTION = 0.2; // listed festivals: hide days under 20% of the busiest day
 const MIN_TOUR_STOP_ARTISTS = 5; // touring festivals: fewer tagged sets is a band's own show
 const MAX_LINEUP_VENUES = 10; // a touring festival stop's stages
+// Placeholder venue names setlist.fm sometimes files a stop under ("Parking Lot", San Diego 2018).
+const GENERIC_VENUE =
+  /^(the )?(parking lot|lot|grounds|main stage|side stage|stage|tba|tbd|unknown( venue)?)$/i;
 
 type Ctx = { client: SetlistFmClient; now: number };
 type ConcertSearchResponse = Omit<SearchResponse, "results"> & { results: ConcertResult[] };
@@ -440,9 +443,10 @@ async function searchTourStops(
     }
     for (const stop of byStop.values()) {
       if (stop.artists.size < MIN_TOUR_STOP_ARTISTS) continue;
-      // Saved against the stage with the most sets, so everyone at the stop shares one show.
+      // Saved against the stage with the most sets, so everyone at the stop shares one show,
+      // skipping placeholder names when the stop has a real venue.
       const venues = [...stop.venues.values()].sort((a, b) => b.sets - a.sets);
-      const grounds = venues[0]!.venue;
+      const grounds = (venues.find((v) => !GENERIC_VENUE.test(v.venue.name)) ?? venues[0]!).venue;
       results.push({
         kind: "festival-day",
         key: `${grounds.setlistfmId}|${stop.iso}`,
