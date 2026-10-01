@@ -25,8 +25,6 @@ type BarChartProps = {
 const PLOT_HEIGHT = 130; // px for the tallest bar; value labels sit above it
 const GAP = 2; // px between columns (gap-0.5)
 const LABEL_PAD = 4; // px of air a label needs beside its neighbors
-// Before the chart has measured itself (server render), assume a phone-width chart fits this many.
-const FALLBACK_LABEL_ALL_MAX = 10;
 
 /** Width in px of the widest text, in the chart's font at the given size and weight. */
 function widestText(texts: string[], el: HTMLElement, font: string): number {
@@ -53,13 +51,20 @@ function useLabelFit(bars: Bar[]) {
     const n = Math.max(1, valueLabels.length);
     const capWidth = widestText(valueLabels, el, "700 12px") + LABEL_PAD;
     const axisWidth = widestText(axisLabels, el, "600 11px") + LABEL_PAD;
-    const observer = new ResizeObserver(([entry]) => {
-      const column = (entry.contentRect.width - GAP * (n - 1)) / n;
+    const measure = (width: number) => {
+      const column = (width - GAP * (n - 1)) / n;
       if (column <= 0) return;
       setFit({ caps: capWidth <= column, axisEvery: Math.max(1, Math.ceil(axisWidth / column)) });
-    });
+    };
+    // Measure right away (ResizeObserver waits for a paint, which a background tab may not do),
+    // then again whenever the chart is resized.
+    const initial = setTimeout(() => measure(el.getBoundingClientRect().width));
+    const observer = new ResizeObserver(([entry]) => measure(entry.contentRect.width));
     observer.observe(el);
-    return () => observer.disconnect();
+    return () => {
+      clearTimeout(initial);
+      observer.disconnect();
+    };
   }, [labels]);
 
   return { ref, fit };
@@ -74,11 +79,13 @@ export function BarChart({ title, bars, summary, columns }: BarChartProps) {
   const [active, setActive] = useState<number | null>(null);
   const max = Math.max(1, ...bars.map((b) => b.value));
   const { ref, fit } = useLabelFit(bars);
-  const fallbackAll = bars.length <= FALLBACK_LABEL_ALL_MAX;
-  const labelCaps = fit ? fit.caps : fallbackAll;
+  // Until the chart has measured itself (server render, first paint), labels take their space
+  // but stay invisible, so they don't flash a guess and then change.
+  const measuring = fit ? "" : "invisible";
+  const labelCaps = fit?.caps ?? true;
   // Label every year when there's room; otherwise every Nth, counted back from the latest
   // year so it's always labeled and the spacing stays even.
-  const labelEvery = fit ? fit.axisEvery : fallbackAll ? 1 : Math.ceil(bars.length / 8);
+  const labelEvery = fit?.axisEvery ?? 1;
 
   return (
     <figure className="flex flex-col gap-2">
@@ -100,7 +107,7 @@ export function BarChart({ title, bars, summary, columns }: BarChartProps) {
               onPointerDown={() => setActive(i)}
             >
               {labelCaps && (
-                <span aria-hidden className="text-xs font-bold text-foreground">
+                <span aria-hidden className={`text-xs font-bold text-foreground ${measuring}`}>
                   {bar.valueLabel}
                 </span>
               )}
@@ -125,7 +132,7 @@ export function BarChart({ title, bars, summary, columns }: BarChartProps) {
           );
         })}
       </div>
-      <div aria-hidden className="flex gap-0.5">
+      <div aria-hidden className={`flex gap-0.5 ${measuring}`}>
         {bars.map((bar, i) => (
           <span
             key={bar.key}
