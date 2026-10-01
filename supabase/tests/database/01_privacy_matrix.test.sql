@@ -25,9 +25,10 @@ select u.name,
   (select count(*) from public.activities a where a.actor_id = pg_temp.uid(u.name))::int as activities
 from (values ('pat'), ('priya'), ('fran')) as u (name);
 
+-- Counts aren't pinned, so the tests still hold after you've used the app locally.
 select results_eq(
-  'select name, logs, lineup_rows > 0, activities > 0 from truth order by name',
-  $$ values ('fran', 3, true, true), ('pat', 4, true, true), ('priya', 2, true, true) $$,
+  'select name, logs > 0, lineup_rows > 0, activities > 0 from truth order by name',
+  $$ values ('fran', true, true, true), ('pat', true, true, true), ('priya', true, true, true) $$,
   'seed: every user has logs, lineups and feed items to hide or show'
 );
 
@@ -92,7 +93,7 @@ select pg_temp.check_viewer('fran');
 
 -- An accepted follower of a private account sees their logs (quinn -> priya).
 select pg_temp.as_user('quinn');
-select is((select count(*)::int from public.concert_logs where user_id = pg_temp.uid('priya')), 2,
+select is((select count(*)::int from public.concert_logs where user_id = pg_temp.uid('priya')), (select logs from truth where name = 'priya'),
   'quinn (accepted follower) sees priya''s logs');
 
 -- ---------------------------------------------------------------------------------------------

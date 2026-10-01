@@ -15,6 +15,8 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "spike:setlistfm": "tsx scripts/setlistfm-spike.ts",
+    "find:festival-venue": "tsx scripts/find-festival-venues.ts",
+    "functions:serve": "supabase functions serve --env-file supabase/functions/.env",
     "supabase": "supabase",
     "db:start": "supabase start",
     "db:stop": "supabase stop",

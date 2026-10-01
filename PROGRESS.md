@@ -1,15 +1,13 @@
 # Progress
 
-**Current phase:** Phase 1 done. Next up: Phase 2.
+**Current phase:** Phase 2 done. Next up: Phase 3.
 **Last updated:** 2026-09-30
 
 ## Next step
 
-1. Decide the festival search approach (open question).
-2. Start Phase 2:
-   - the `setlist-search` Edge Function: search, lineup assembly, default ordering, month filter. Use the findings in `docs/setlistfm-notes.md`.
-   - the `log_concert` function, written in the `private`/`public` grant style from Phase 1
-   - the add-concert screens
+Start Phase 3: the log list (newest first, 20 per page, cards with headliner + up to two supporting acts), artist search and year/month/state filters, and the full concert detail page ("Also here", edit, delete), building on the minimal `/concerts/[id]` page from Phase 2. Edit needs a lineup/details update path (probably an `update_log` function mirroring `log_concert`).
+
+To use Add concert locally, run `pnpm functions:serve` alongside `pnpm dev`.
 
 ## Before building
 
@@ -39,13 +37,19 @@
 
 ## Phase 2: Add concert
 
-- [ ] `setlist-search` Edge Function (search, lineup assembly, default ordering, month filtering)
-- [ ] Search screen with Concert/Festival toggle and month/year/state dropdowns
-- [ ] Lineup editor (reorder, remove, add)
-- [ ] Details step (rating, ticket price, notes)
-- [ ] Manual entry
-- [ ] `log_concert` Postgres function (single transaction)
-- [ ] Done when: a setlist.fm concert, a festival day and a manual concert can each be logged, and a duplicate log is blocked
+- [x] `setlist-search` Edge Function (search, lineup assembly, default ordering, month filtering), plus a list of 12 major US festivals (`supabase/functions/_shared/setlistfm/festivals.ts`)
+- [x] Search screen with Concert/Festival toggle and month/year/state dropdowns
+- [x] Lineup editor (drag to reorder with mouse, touch or keyboard; up arrows; remove; add)
+- [x] Details step (rating, ticket price, notes; festival name for festival days)
+- [x] Manual entry
+- [x] `log_concert` Postgres function (single transaction)
+- [x] Done when: a setlist.fm concert, a festival day and a manual concert can each be logged, and a duplicate log is blocked. Checked in the browser on 2026-09-30 as priya:
+  - boygenius at Madison Square Garden
+  - Riot Fest 2024 Day 2
+  - a manual show at The Pinhook
+  - re-logging Hollywood Bowl was blocked, with a link to the existing log
+
+  Covered by 33 pgTAP tests (`04_log_concert`), 59 function unit tests and 2 API smoke tests.
 
 ## Phase 3: Log and concert detail
 
@@ -127,15 +131,38 @@ Record anything decided that isn't in the spec, with the date.
 - 2026-09-30: Phase 1 accepted with the "Stats and leaderboards" privacy row deferred to Phase 4. Editing profile details and deleting an account go in Phase 5.
 - 2026-09-30 (Phase 1): The auth site URL is `http://localhost:3000`. The web theme now uses the exact mockup colors. Error red (#ff7a7a) isn't in the mockups.
 
+- 2026-09-30 (Phase 2): Festival search is option 2: a hand-kept festival list plus a plain venue-name search fallback. Each list entry holds a venue-name search (catching stage-level venues), a canonical grounds venue to save shows against, and a date rule. Details in `docs/setlistfm-notes.md` ("Phase 2 update").
+- 2026-09-30 (Phase 2): Concert search results don't show an artist count, unlike the mockup. It would cost one setlist.fm request per result; the count shows on the lineup step. Festival days keep exact counts, which cost a few seconds per search, with a loading message and a 10-minute in-memory cache.
+- 2026-09-30 (Phase 2): Concert search tries the query as an artist name first, then as a venue name if no artist matches.
+- 2026-09-30 (Phase 2): The festival name is editable on the details step (pre-filled from the festival list, or from the search text for unlisted festivals). Manual entry has an optional festival name field. Neither is in the mockups.
+- 2026-09-30 (Phase 2): `log_concert` matching rules:
+  - setlist.fm venues match by setlist.fm ID; manual venues by name + city + state, ignoring case.
+  - setlist.fm artists match by MusicBrainz ID; manual artists by name, preferring a setlist.fm artist.
+  - A setlist.fm venue or artist adopts a manually entered twin rather than duplicating it.
+  - Manual logs ignore any setlist.fm IDs or links sent.
+  - Only `https://www.setlist.fm/...` links are stored.
+  - Shows from 1960 to today only.
+  - Duplicates raise `23505 already_logged` with the existing log's id in DETAIL.
+- 2026-09-30 (Phase 2): The Edge Function checks the caller's session itself (`auth.getClaims`) with `verify_jwt = false`, because the gateway's check only knows the legacy JWT secret.
+- 2026-09-30 (Phase 2): The lineup editor uses dnd-kit (`@dnd-kit/core` + `sortable`) for accessible drag and drop, with the mockup's up arrows as well.
+- 2026-09-30 (Phase 2): After saving, the app opens a minimal concert page (`/concerts/[id]`: lineup, rating, price, notes, setlist.fm attribution). Phase 3 adds "Also here", edit and delete.
+- 2026-09-30 (Phase 2): A session whose account no longer exists (deleted, or wiped by `db:reset`) is cleared via `/auth/reset-session` instead of looping between the proxy and the pages.
+- 2026-09-30 (Phase 2): The header now has an "Add concert" button (the rest of the main nav still arrives with its phases).
+
 **Open questions (to decide):**
 
-- **Festival search (before Phase 2).** Two options:
-  - Search `venueName=<festival name>` only, grouping results per day, and suggest searching the grounds (e.g. "Grant Park") when nothing matches.
-  - Also keep a small hand-maintained map of major US festivals to their grounds venue IDs.
-
-  "Lollapalooza" finds nothing by name; "Bonnaroo" works.
+_None right now._
 
 ## Known issues
+
+- Festival search limits:
+  - setlist.fm doesn't have Lollapalooza 2025/2026 under Grant Park, so a no-year Lolla search shows 2024.
+  - Outside Lands and Summerfest aren't in the festival list (no reliable filing).
+  - A Coachella search takes about 12 s and can report `incomplete`.
+- `log_concert` trusts the artist names, MusicBrainz IDs and venue IDs the client sends. A tampered request could create a shared artist with a wrong name for a real ID. Fine for MVP; harden later by having the Edge Function sign the lineups it returns.
+- No Playwright end-to-end tests yet. The add-concert flows were checked by hand in the browser. Playwright needs a browser download (~hundreds of MB to the user profile), so ask before adding it (suggest Phase 6).
+- ESLint 9 is marked deprecated in favour of 10. Stay on 9 until `eslint-config-next` supports 10.
+- The Edge Function isn't deployed anywhere yet. For the hosted project (Phase 6): `pnpm supabase functions deploy setlist-search` and `pnpm supabase secrets set SETLISTFM_API_KEY=...`.
 
 - Studio's Logs page is empty locally because analytics are off (see decisions).
 - If your root `.env` was copied from the old template, it still has `SUPABASE_ANON_KEY` / `SUPABASE_SERVICE_ROLE_KEY`. They're unused. The API smoke tests read `SUPABASE_URL` / `SUPABASE_PUBLISHABLE_KEY` and otherwise fall back to `supabase status`.

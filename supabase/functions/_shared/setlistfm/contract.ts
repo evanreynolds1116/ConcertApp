@@ -1,0 +1,87 @@
+// Copy of packages/shared/src/setlist-search.ts: the deployed function can't import from the
+// monorepo. tests/functions/contract.test.ts fails to compile if the two drift apart.
+
+/** A US venue as the app stores it. `state` is a USPS code, e.g. "TN". */
+export type UsVenue = {
+  setlistfmId: string | null;
+  name: string;
+  city: string;
+  state: string;
+  url: string | null;
+};
+
+/**
+ * How to fetch a lineup: every setlist at one venue on a date (a concert), or every setlist
+ * matching a venue-name search on a date (a festival whose stages are filed as separate venues).
+ */
+export type LineupTarget =
+  | { kind: "venue"; venueId: string }
+  | { kind: "venue-search"; venueName: string; cityName: string | null; stateCode: string | null };
+
+export type ConcertResult = {
+  kind: "concert";
+  key: string;
+  date: string; // ISO yyyy-mm-dd
+  venue: UsVenue;
+  /** The artist searched for, or (for a venue search) the artist with the longest set. */
+  title: string;
+  artistMbid: string | null;
+  setlistfmUrl: string;
+  target: LineupTarget;
+};
+
+export type FestivalDayResult = {
+  kind: "festival-day";
+  key: string;
+  date: string; // ISO yyyy-mm-dd
+  /** The festival grounds; every log of this day is saved against this venue. */
+  venue: UsVenue;
+  festivalName: string;
+  /** "Day 2", or "Weekend 2 · Day 1" for festivals that run over two weekends. */
+  dayLabel: string;
+  artistCount: number;
+  target: LineupTarget;
+};
+
+export type SearchResult = ConcertResult | FestivalDayResult;
+
+export type SearchRequest = {
+  action: "search";
+  mode: "concert" | "festival";
+  query: string;
+  year?: number;
+  month?: number; // 1-12; only with a year
+  state?: string;
+  page?: number; // concert mode; from a previous response's nextPage
+};
+
+export type SearchResponse = {
+  results: SearchResult[];
+  nextPage: number | null;
+  /** True when setlist.fm had more than we could fetch; narrow the search to see the rest. */
+  incomplete: boolean;
+};
+
+export type LineupRequest = {
+  action: "lineup";
+  target: LineupTarget;
+  date: string; // ISO yyyy-mm-dd
+  /** Put this artist first: the one the user searched for. */
+  searchedArtistMbid?: string | null;
+};
+
+export type LineupArtist = {
+  name: string;
+  mbid: string | null;
+  setlistfmUrl: string | null;
+  songCount: number;
+};
+
+export type LineupResponse = {
+  /** In default order: searched artist first, then most songs first, then A-Z. */
+  artists: LineupArtist[];
+  /** A setlist.fm page for this show, for attribution. */
+  setlistfmUrl: string | null;
+};
+
+export type SetlistSearchRequest = SearchRequest | LineupRequest;

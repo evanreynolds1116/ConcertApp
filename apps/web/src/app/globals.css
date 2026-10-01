@@ -12,6 +12,8 @@
   --accent: #5cc8ff;
   --accent-hover: #8fdbff;
   --on-accent: #06121a;
+  --hero: #16303e; /* concert detail header */
+  --hero-muted: #c9d6de;
   --danger: #ff7a7a; /* not in the mockups; ~7.4:1 on the background, ~6.6:1 on surfaces */
 }
 
@@ -26,6 +28,8 @@
   --color-accent: var(--accent);
   --color-accent-hover: var(--accent-hover);
   --color-on-accent: var(--on-accent);
+  --color-hero: var(--hero);
+  --color-hero-muted: var(--hero-muted);
   --color-danger: var(--danger);
   --font-sans: var(--font-figtree);
 }

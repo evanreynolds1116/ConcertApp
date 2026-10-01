@@ -286,6 +286,20 @@ export type Database = {
     Functions: {
       can_view: { Args: { owner_id: string; viewer_id: string }; Returns: boolean };
       is_username_available: { Args: { name: string }; Returns: boolean };
+      log_concert: {
+        Args: {
+          p_artists: Json;
+          p_date: string;
+          p_festival_name?: string;
+          p_notes?: string;
+          p_rating_tenths?: number;
+          p_setlistfm_url?: string;
+          p_source: string;
+          p_ticket_price_cents?: number;
+          p_venue: Json;
+        };
+        Returns: string;
+      };
     };
     Enums: {
       [_ in never]: never;

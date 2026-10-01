@@ -24,6 +24,12 @@ export const getViewer = cache(async () => {
 /** Like getViewer, but sends signed-out visitors to the sign-in page. */
 export async function requireViewer() {
   const viewer = await getViewer();
-  if (!viewer) redirect("/sign-in");
+  if (!viewer) {
+    // A session without a profile means the account is gone; clear it rather than looping
+    // between here and the proxy (which only checks the token).
+    const supabase = await createClient();
+    const { data } = await supabase.auth.getClaims();
+    redirect(data?.claims?.sub ? "/auth/reset-session" : "/sign-in");
+  }
   return viewer;
 }

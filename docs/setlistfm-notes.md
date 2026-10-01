@@ -94,10 +94,31 @@ Cases run:
 1. **Festivals (spec: "festival name as the venue, as a tour name, or per stage").**
    - It's none of those, exactly. The venue is the *grounds*, found through the festival name only when setlist.fm has an alias.
    - The tour name is never the festival.
-   - Stages are not separate venues, at least for Bonnaroo.
+   - Stages are not separate venues for Bonnaroo, but they are for Riot Fest and Coachella 2025 (see the Phase 2 update below).
    - The festival name isn't in the data, so `festival_name` must be user-entered.
 2. **Venue leaderboards will show grounds names:** "Great Stage Park, Manchester, TN", not "Bonnaroo". That's accurate, but worth knowing when we design the Stats and Log cards. The festival name on the card comes from `shows.festival_name`.
 3. **Default ordering by song count** needs a tie-break and will often put the headliner below openers when the headliner's setlist hasn't been entered yet. It still works as a default because the user reorders.
 4. **Lineup assembly needs pagination and dedupe:** 20 setlists per page, and the same artist can appear twice on a date. The spec's step 3 doesn't mention either.
 5. **Month filtering costs requests:** it may need several pages per search. Paging newest-first and stopping early keeps it bounded.
 6. **A no-match search is a 404**, not an empty 200.
+
+## Phase 2 update: how festival search actually works
+
+Built in `supabase/functions/_shared/setlistfm/` (festival list in `festivals.ts`), after looking up the venues with `pnpm find:festival-venue "<venue>" <city> <year>`.
+
+- **Some festivals do file stages as separate venues.** Bonnaroo (one "Great Stage Park" venue) was the exception, not the rule:
+  - Riot Fest files every stage separately, and the stages change yearly (2024: "NOFX World", "AAA Stage-RiotFest", "Cabaret Metro Stage"…).
+  - Coachella 2025 files some days under stages ("Mojave", "Sahara", "Gobi"…).
+  - Summerfest has per-stage venues whose names don't mention the park, so it isn't in the list.
+- **A venue-name search catches every stage.** setlist.fm matches "Douglass Park" in Chicago to all Riot Fest stage venues and "Empire Polo" in Indio to Coachella's stages. So each listed festival stores a venue-name search plus city and state, not venue IDs. A festival day's lineup is every setlist matching that search on that date.
+- **Each listed festival names one grounds venue** (e.g. "Douglass Park, Chicago, IL"). Every log of that day is saved against it, so attendees share one show and "Also here" works. It has a setlist.fm ID where one exists (Great Stage Park, Empire Polo Club, Grant Park…) and none for Douglass Park.
+- **Grounds host other events, so each festival has a date rule:**
+  - months for most festivals
+  - Coachella vs Stagecoach at Empire Polo Club: Stagecoach is the Friday–Sunday starting on the last Friday of April
+  - Newport Folk (July) vs Jazz (August) at Fort Adams
+  - Governors Ball moved venues: Randall's Island ≤2021, Citi Field 2022–23, Flushing Meadows 2024+
+- **Small side events show up as extra days.** Bonnaroo 2024 had 4 and 8 setlists on June 11–12, before the festival's June 13–16. Listed festivals drop days with under 20% of the busiest day's artists.
+- **setlist.fm may not have a recent edition at all.** Lollapalooza 2025 and 2026 aren't filed under Grant Park (only stray July shows are). Without a year, search shows the most recent edition whose busiest day has at least 8 artists, which is currently 2024.
+- **Unlisted festivals** fall back to a plain venue-name search, one result per venue per day, named after what the user typed. "Outside Lands" finds nothing under any name we tried; manual entry covers it.
+- **Cost:** listing a big festival's days means paging through the year (20 setlists a page). Bonnaroo or Lollapalooza take about 7–8 s; Coachella, with two weekends plus Stagecoach first, about 12 s (it hits the 20-page cap, which is reported as `incomplete`). Results are cached in the function's memory for 10 minutes, so repeats are instant. That's in memory only, never stored.
+- **Search results don't show artist counts for concerts** (decided 2026-09-30): it would take one extra request per result. Festival days do show exact counts.

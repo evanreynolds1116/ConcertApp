@@ -14,7 +14,16 @@ export default async function AppLayout({ children }: { children: React.ReactNod
             Music Junkie
           </Link>
           <div className="flex items-center gap-4 text-sm">
-            <span className="text-muted">@{profile.username}</span>
+            <Link
+              href="/add"
+              className="flex h-9 items-center gap-1 rounded-full bg-accent px-3.5 font-bold text-on-accent hover:bg-accent-hover"
+            >
+              <span aria-hidden className="text-lg leading-none">
+                +
+              </span>{" "}
+              Add concert
+            </Link>
+            <span className="hidden text-muted sm:inline">@{profile.username}</span>
             <Link href="/settings" className="font-semibold hover:text-accent">
               Settings
             </Link>

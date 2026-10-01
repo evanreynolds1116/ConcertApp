@@ -62,16 +62,20 @@ describe("signed in", () => {
     expect(data?.claims.sub).toBe(SEED.pat.id);
   });
 
+  // Each owner's own count is the truth (counts aren't pinned, so local use doesn't break this).
   it("pat (accepted follower of fran) sees fran's logs, not private priya's", async () => {
-    const pat = await as("pat");
-    expect(await logCount(pat, SEED.pat.id)).toBe(4);
-    expect(await logCount(pat, SEED.fran.id)).toBe(3);
+    const [pat, fran] = await Promise.all([as("pat"), as("fran")]);
+    const franOwn = await logCount(fran, SEED.fran.id);
+    expect(franOwn).toBeGreaterThan(0);
+    expect(await logCount(pat, SEED.fran.id)).toBe(franOwn);
     expect(await logCount(pat, SEED.priya.id)).toBe(0);
   });
 
   it("priya sees public pat's logs, but a pending request doesn't unlock fran's", async () => {
-    const priya = await as("priya");
-    expect(await logCount(priya, SEED.pat.id)).toBe(4);
+    const [priya, pat] = await Promise.all([as("priya"), as("pat")]);
+    const patOwn = await logCount(pat, SEED.pat.id);
+    expect(patOwn).toBeGreaterThan(0);
+    expect(await logCount(priya, SEED.pat.id)).toBe(patOwn);
     expect(await logCount(priya, SEED.fran.id)).toBe(0);
     const { data: pending } = await priya
       .from("follows")
