@@ -15,6 +15,12 @@ import type { LogPage } from "@/lib/concerts";
 import { loadMoreLogs } from "./log-actions";
 
 type LogViewProps = {
+  /** Whose log, and the page it lives on ("/" for yours, "/u/<username>" for others). */
+  userId: string;
+  basePath: string;
+  heading: string;
+  headingLevel?: "h1" | "h2";
+  ownLog: boolean;
   query: string;
   filters: LogFilters;
   initialPage: LogPage;
@@ -28,6 +34,11 @@ type LogViewProps = {
 const SEARCH_DEBOUNCE_MS = 300;
 
 export function LogView({
+  userId,
+  basePath,
+  heading,
+  headingLevel = "h1",
+  ownLog,
   query,
   filters,
   initialPage,
@@ -44,9 +55,9 @@ export function LogView({
   const apply = useCallback(
     (next: LogFilters) => {
       const q = logFiltersToQuery(next);
-      startTransition(() => router.replace(q ? `/?${q}` : "/", { scroll: false }));
+      startTransition(() => router.replace(q ? `${basePath}?${q}` : basePath, { scroll: false }));
     },
-    [router],
+    [router, basePath],
   );
 
   // Artist search updates the URL as you type, debounced.
@@ -67,7 +78,11 @@ export function LogView({
 
   return (
     <div className="mx-auto w-full max-w-xl">
-      <h1 className="text-3xl font-extrabold tracking-tight">Your concerts</h1>
+      {headingLevel === "h1" ? (
+        <h1 className="text-3xl font-extrabold tracking-tight">{heading}</h1>
+      ) : (
+        <h2 className="text-2xl font-extrabold tracking-tight">{heading}</h2>
+      )}
       <p className="mt-1 text-sm text-muted" aria-live="polite">
         {filtered
           ? `${initialPage.total} of ${totalLogged} ${totalLogged === 1 ? "show" : "shows"}`
@@ -172,6 +187,8 @@ export function LogView({
         <LogList
           // A new filter set starts a fresh list (dropping pages loaded for the old one).
           key={query}
+          userId={userId}
+          ownLog={ownLog}
           query={query}
           initialPage={initialPage}
           emptyLog={totalLogged === 0}
@@ -267,13 +284,15 @@ function PillSelect({ label, value, options, onChange }: PillSelectProps) {
 }
 
 type LogListProps = {
+  userId: string;
+  ownLog: boolean;
   query: string;
   initialPage: LogPage;
   emptyLog: boolean;
   onClearFilters: () => void;
 };
 
-function LogList({ query, initialPage, emptyLog, onClearFilters }: LogListProps) {
+function LogList({ userId, ownLog, query, initialPage, emptyLog, onClearFilters }: LogListProps) {
   const [entries, setEntries] = useState(initialPage.entries);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -283,7 +302,7 @@ function LogList({ query, initialPage, emptyLog, onClearFilters }: LogListProps)
     setLoading(true);
     setError(null);
     try {
-      const next = await loadMoreLogs(query, entries.length);
+      const next = await loadMoreLogs(userId, query, entries.length);
       setEntries((current) => [...current, ...next.entries]);
     } catch {
       setError("Couldn't load more concerts. Try again.");
@@ -292,6 +311,13 @@ function LogList({ query, initialPage, emptyLog, onClearFilters }: LogListProps)
     }
   }
 
+  if (emptyLog && !ownLog) {
+    return (
+      <div className="rounded-xl border border-border bg-surface p-6 text-center">
+        <p className="font-semibold">No concerts logged yet</p>
+      </div>
+    );
+  }
   if (emptyLog) {
     return (
       <div className="rounded-xl border border-border bg-surface p-6 text-center">

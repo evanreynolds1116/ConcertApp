@@ -14,7 +14,7 @@ export const loadConcert = cache(async (id: string) => {
   const { data } = await supabase
     .from("concert_logs")
     .select(
-      "id, user_id, rating_tenths, ticket_price_cents, notes, source, shows!inner(date, festival_name, festival_day_label, setlistfm_url, venues!inner(name, city, state)), log_artists(position, artists!inner(id, name))",
+      "id, user_id, rating_tenths, ticket_price_cents, notes, source, profiles!inner(username, display_name), shows!inner(date, festival_name, festival_day_label, setlistfm_url, venues!inner(name, city, state)), log_artists(position, artists!inner(id, name))",
     )
     .eq("id", id)
     .maybeSingle();
@@ -29,5 +29,6 @@ export const loadConcert = cache(async (id: string) => {
     venue: data.shows.venues,
     lineup,
     isOwner: data.user_id === profile.id,
+    owner: data.profiles,
   };
 });

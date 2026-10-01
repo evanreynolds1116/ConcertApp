@@ -20,7 +20,7 @@ export async function generateMetadata({ params }: PageProps<"/concerts/[id]">):
 export default async function ConcertPage({ params }: PageProps<"/concerts/[id]">) {
   const concert = await loadConcert((await params).id);
   if (!concert) notFound();
-  const { supabase, log, show, venue, lineup, isOwner } = concert;
+  const { supabase, log, show, venue, lineup, isOwner, owner } = concert;
   const alsoHere = await fetchAlsoHere(supabase, log.id);
   const headliner = lineup[0]?.name ?? "Concert";
   const hasDetails = log.ticket_price_cents !== null || log.notes;
@@ -29,7 +29,7 @@ export default async function ConcertPage({ params }: PageProps<"/concerts/[id]"
     <article className="mx-auto w-full max-w-xl">
       <section className="-mx-4 bg-hero px-5 pt-3 pb-5.5 sm:mx-0 sm:rounded-xl">
         <Link
-          href="/"
+          href={isOwner ? "/" : `/u/${owner.username}`}
           className="-ml-2 inline-flex min-h-11 items-center gap-0.5 pr-3 font-semibold"
         >
           <svg
@@ -41,7 +41,7 @@ export default async function ConcertPage({ params }: PageProps<"/concerts/[id]"
           >
             <path d="M15 18l-6-6 6-6" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
-          Log
+          {isOwner ? "Log" : owner.display_name}
         </Link>
         <div className="mt-3 flex items-end justify-between gap-4">
           <div className="min-w-0">

@@ -297,6 +297,53 @@ export type Database = {
         }[];
       };
       can_view: { Args: { owner_id: string; viewer_id: string }; Returns: boolean };
+      delete_account: { Args: Record<PropertyKey, never>; Returns: undefined };
+      feed: {
+        Args: { p_before_created_at?: string; p_before_id?: string; p_limit?: number };
+        Returns: {
+          actor_avatar_url: string;
+          actor_display_name: string;
+          actor_id: string;
+          actor_username: string;
+          artist_count: number;
+          city: string;
+          created_at: string;
+          festival_day_label: string;
+          festival_name: string;
+          headliner: string;
+          id: string;
+          log_id: string;
+          rating_tenths: number;
+          show_date: string;
+          state: string;
+          target_display_name: string;
+          target_id: string;
+          target_username: string;
+          type: string;
+          venue_name: string;
+        }[];
+      };
+      follow_list: {
+        Args: { p_kind: string; p_user_id: string };
+        Returns: {
+          avatar_url: string;
+          display_name: string;
+          follow_status: string;
+          id: string;
+          is_private: boolean;
+          username: string;
+        }[];
+      };
+      follow_requests: {
+        Args: Record<PropertyKey, never>;
+        Returns: {
+          avatar_url: string;
+          display_name: string;
+          id: string;
+          requested_at: string;
+          username: string;
+        }[];
+      };
       is_username_available: { Args: { name: string }; Returns: boolean };
       leaderboard: {
         Args: { p_kind: string; p_user_id: string };
@@ -328,6 +375,35 @@ export type Database = {
         Returns: {
           states: string[];
           years: number[];
+        }[];
+      };
+      my_follow_status: { Args: { p_user_id: string }; Returns: string };
+      profile_overview: {
+        Args: { p_username: string };
+        Returns: {
+          avatar_url: string;
+          can_view: boolean;
+          concerts: number;
+          display_name: string;
+          follow_status: string;
+          followers: number;
+          following: number;
+          follows_viewer: boolean;
+          id: string;
+          is_private: boolean;
+          is_self: boolean;
+          username: string;
+        }[];
+      };
+      search_people: {
+        Args: { p_query: string };
+        Returns: {
+          avatar_url: string;
+          display_name: string;
+          follow_status: string;
+          id: string;
+          is_private: boolean;
+          username: string;
         }[];
       };
       stats_by_year: {

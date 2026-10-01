@@ -49,7 +49,13 @@ function rowTitle(kind: LeaderboardKind, row: LeaderboardRow): { name: string; d
   }
 }
 
-export function Leaderboards({ boards }: { boards: Record<LeaderboardKind, LeaderboardRow[]> }) {
+export function Leaderboards({
+  boards,
+  logPath,
+}: {
+  boards: Record<LeaderboardKind, LeaderboardRow[]>;
+  logPath: string;
+}) {
   const [selected, setSelected] = useState<LeaderboardKind>("artist");
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
@@ -109,7 +115,7 @@ export function Leaderboards({ boards }: { boards: Record<LeaderboardKind, Leade
             return (
               <li key={`${row.item_id ?? row.name}|${row.state ?? ""}`}>
                 <Link
-                  href={`/?${query}`}
+                  href={`${logPath}?${query}`}
                   className="-mx-2 flex min-h-15 items-center gap-3.5 rounded-xl px-2 hover:bg-surface"
                 >
                   <span className="w-6 text-right font-extrabold text-muted">{rank}</span>

@@ -4,3 +4,4 @@ export type { Database, Json, Tables, TablesInsert, TablesUpdate } from "./datab
 export type * from "./setlist-search";
 export * from "./concert";
 export * from "./log-filters";
+export * from "./social";

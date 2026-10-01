@@ -125,4 +125,19 @@ insert into public.log_artists (log_id, artist_id, position) values
   ('10000000-0000-4000-a000-000000000008', '40000000-0000-4000-a000-000000000006', 2),
   ('10000000-0000-4000-a000-000000000009', '40000000-0000-4000-a000-000000000009', 1);
 
+-- Realistic timestamps for the feed: each concert logged the evening after the show; the
+-- follows a few days before the newest show.
+update public.concert_logs l
+set created_at = s.date + interval '1 day 20 hours',
+    updated_at = s.date + interval '1 day 20 hours'
+from public.shows s
+where s.id = l.show_id;
+update public.activities a
+set created_at = l.created_at
+from public.concert_logs l
+where a.log_id = l.id;
+update public.activities set created_at = timestamptz '2026-09-10 18:00+00' where type = 'follow_started' and actor_id = '00000000-0000-4000-a000-000000000001';
+update public.activities set created_at = timestamptz '2026-09-12 09:30+00' where type = 'follow_started' and actor_id = '00000000-0000-4000-a000-000000000003';
+update public.follows set created_at = timestamptz '2026-09-08 12:00+00' where status = 'pending';
+
 commit;

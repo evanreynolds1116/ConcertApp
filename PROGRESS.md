@@ -1,20 +1,20 @@
 # Progress
 
-**Current phase:** Phase 4 done. Next up: Phase 5.
+**Current phase:** Phase 5 done. Next up: Phase 6.
 **Last updated:** 2026-09-30
 
 ## Next step
 
-Start Phase 5 (Social):
-- People search
-- Follow/unfollow and requests (send, cancel, accept, decline)
-- Other users' profiles, including the locked private view. Reuse `user_log`, `user_stats`, `leaderboard` and `stats_by_year` with the profile's user id; they already apply privacy.
-- The activity feed
-- Settings additions moved here: edit username, display name and avatar; delete account
-
-Also revisit the concert page's "Log" back link on other people's concerts.
-
-The database side of following is already built and tested (Phase 1), so Phase 5 is mostly screens plus a feed query and people search.
+Start Phase 6 (Web polish and deploy):
+- Loading, empty and error states. Several empty states already exist; add `loading.tsx` / `error.tsx` per route group and a not-found page in the app's style.
+- Keyboard and screen reader pass, and phone-width layout across every screen.
+- setlist.fm attribution everywhere it's needed. The add-concert search and concert pages have it; check the feed and log cards against the spec.
+- Deploy:
+  - create the hosted Supabase project (needs a Supabase account) and push the migrations
+  - deploy `setlist-search` and set `SETLISTFM_API_KEY` as a secret
+  - deploy the web app to Vercel
+  - decide on email confirmation for the hosted project
+- Decide whether to add Playwright end-to-end tests (needs a browser download; ask first).
 
 To use Add concert locally, run `pnpm functions:serve` alongside `pnpm dev`.
 
@@ -83,12 +83,24 @@ To use Add concert locally, run `pnpm functions:serve` alongside `pnpm dev`.
 
 ## Phase 5: Social
 
-- [ ] People search
-- [ ] Follow / unfollow; requests (send, cancel, accept, decline)
-- [ ] Other users' profiles, including the locked private view
-- [ ] Activity feed
-- [ ] Settings: edit username, display name and avatar; delete account (moved here from the spec's Settings section, 2026-09-30)
-- [ ] Done when: two test accounts can go through every following rule and see the right things at each step
+- [x] People search
+- [x] Follow / unfollow; requests (send, cancel, accept, decline); remove a follower
+- [x] Other users' profiles, including the locked private view: their log with filters, stats, follower and following lists
+- [x] Activity feed (infinite scroll, 20 per page)
+- [x] Settings: edit username, display name and avatar; delete account (moved here from the spec's Settings section, 2026-09-30)
+- [x] Done when: two test accounts can go through every following rule and see the right things at each step. Checked in the browser on 2026-10-01 with two fresh accounts (alice_test and bob_test, both private by default). Rule by rule:
+  - **Request:** Bob's follow of private Alice became "Requested". Her profile was locked, and her stats, followers and concert stayed hidden.
+  - **Cancel:** Bob cancelled, then requested again.
+  - **Decline and accept:** Alice declined, then accepted a new request.
+  - **Access:** Bob then saw her log with filters, her stats, "Also here", and feed items both ways.
+  - **Remove a follower:** Alice removed Bob, and he lost access.
+  - **Privacy switches:** going public auto-accepted a pending request; going private kept followers.
+  - **Unfollow:** Bob unfollowed and the profile locked again.
+  - **Public account:** following public pat was accepted immediately.
+  - **Settings:** avatar upload (256×256 WebP, private bucket), and a rename including a taken-username check.
+  - **Delete account:** removed Bob's user, profile, follows and avatar file; the shared show stayed.
+
+  A few steps (Bob's repeat requests, the concerts) were done in SQL as that user, through the same RLS. Covered by 31 pgTAP tests (`07_social`) and 5 API smoke tests.
 
 ## Phase 6: Web polish and deploy
 
@@ -189,6 +201,27 @@ Record anything decided that isn't in the spec, with the date.
 - 2026-09-30 (Phase 4): `user_log` gained `p_artist_id` (exact artist) for leaderboard links. The URL parameter is `artistId`, and the chip shows the artist's name.
 - 2026-09-30 (Phase 4): The header now has the main nav's Log and Stats links (with `aria-current`). On phones, "Add concert" shows as "+ Add" (screen readers still hear "Add concert") and the logo as "MJ".
 
+- 2026-10-01 (Phase 5): Avatars use a private storage bucket, approved by the user:
+  - only signed-in users can read; each user writes only in their own folder
+  - pages show one-hour signed links, signed in one batch per page
+  - images are resized in the browser to 256×256 WebP before upload
+  - `profiles.avatar_url` holds the storage path, and a check constraint keeps it inside the owner's folder
+  - a public URL without a token is refused
+- 2026-10-01 (Phase 5): Routes:
+  - `/people` (search in `?q=`)
+  - `/u/<username>` (profile; yours shows requests, recent concerts and Edit profile; others show their filterable log)
+  - `/u/<username>/stats`, `/followers` and `/following`
+  - `/feed`
+  - `/profile` (redirects to yours)
+- 2026-10-01 (Phase 5): Follower and following lists exist (the profile counts link to them), and you can remove your own followers there. Lists of a private user you don't follow are hidden. `follow_list` checks `can_view` on the list's owner, because follow rows are also visible through the other side's lists.
+- 2026-10-01 (Phase 5): The concert page's back link goes to the owner's profile on someone else's concert (fixes the Phase 3 known issue).
+- 2026-10-01 (Phase 5): Header changes:
+  - all five tabs (Log, Stats, Feed, People, Profile) plus Add concert
+  - Settings moved into Profile, as in the mockup
+  - on phones the tabs sit on a second row
+- 2026-10-01 (Phase 5): Deleting an account is confirmed by typing your username. The server removes the user's avatar files, then calls `delete_account()`, which deletes the auth user; everything else cascades.
+- 2026-10-01 (Phase 5): Seed data now has realistic feed timestamps: each concert is logged the evening after the show, and the follows are dated in September 2026.
+
 **Open questions (to decide):**
 
 _None right now._
@@ -201,7 +234,8 @@ _None right now._
   - A Coachella search takes about 12 s and can report `incomplete`.
 - `log_concert` trusts the artist names, MusicBrainz IDs and venue IDs the client sends. A tampered request could create a shared artist with a wrong name for a real ID. Fine for MVP; harden later by having the Edge Function sign the lineups it returns.
 - No Playwright end-to-end tests yet. The add-concert and log flows were checked by hand in the browser. Playwright needs a browser download (~hundreds of MB to the user profile), so ask before adding it (suggest Phase 6).
-- The concert page's "Log" back link always goes to your own log, even on someone else's concert. Revisit with profiles in Phase 5.
+- "Started following" feed items stay after an unfollow (Phase 1 decision). Unfollowing and following again therefore shows the same "You started following Alice" twice. Consider deleting a follow's feed item when the follow is deleted.
+- Signed avatar links work for anyone holding them until they expire (1 hour). That's inherent to signed links, and much narrower than a public bucket.
 - In the Claude browser pane, the Next dev hot-reload websocket sometimes logs connection errors after server restarts. A direct connection test succeeds, and this is dev-only.
 - ESLint 9 is marked deprecated in favour of 10. Stay on 9 until `eslint-config-next` supports 10.
 - The Edge Function isn't deployed anywhere yet. For the hosted project (Phase 6): `pnpm supabase functions deploy setlist-search` and `pnpm supabase secrets set SETLISTFM_API_KEY=...`.
