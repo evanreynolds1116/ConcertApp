@@ -70,6 +70,8 @@ Database conventions (see `supabase/migrations`):
 - **`security definer` functions use `set search_path = ''`** and fully qualified names. In those functions a bare `=` on a `citext` column is case-sensitive. Use `operator(extensions.=)`.
 - **pgTAP tests** live in `supabase/tests/database/*.test.sql` and share `_helpers.psql` (`as_user('pat')`, `as_anon()`, `as_postgres()`). Don't pin seed counts or reuse realistic shows in tests that write: the local database also holds whatever you logged while using the app.
 
+Web data access: database functions are called through typed wrappers in `apps/web/src/lib/concerts.ts`. The generated types mark every function result column as non-null and every argument as required non-null, so the wrappers declare what the SQL actually returns and accepts. Shared editors for concerts (lineup editor, details fields, date tile, log card) live in `apps/web/src/components/concert/`.
+
 Edge Function conventions:
 
 - **Logic lives in `supabase/functions/_shared/`** as plain TypeScript with relative `.ts` imports and no Deno APIs, unit-tested from `tests/functions`. `supabase/functions/<name>/index.ts` stays a thin Deno handler.

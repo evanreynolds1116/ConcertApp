@@ -75,6 +75,7 @@ insert into public.shows (id, venue_id, date, festival_name, setlistfm_url) valu
   ('30000000-0000-4000-a000-000000000004', '20000000-0000-4000-a000-000000000004', '2022-08-20', null, null),
   ('30000000-0000-4000-a000-000000000005', '20000000-0000-4000-a000-000000000005', '2024-06-16', 'Bonnaroo', null),
   ('30000000-0000-4000-a000-000000000006', '20000000-0000-4000-a000-000000000006', '2024-03-02', null, null);
+update public.shows set festival_day_label = 'Day 4' where id = '30000000-0000-4000-a000-000000000005';
 
 insert into public.artists (id, name, mbid) values
   ('40000000-0000-4000-a000-000000000001', 'boygenius', '3ceeddbd-fba5-4bdb-99f7-2d028ed5afda'),

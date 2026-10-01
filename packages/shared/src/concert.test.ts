@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 import {
   concertDraftSchema,
+  editLogSchema,
+  festivalLabel,
+  supportingActsLine,
   formatPrice,
   formatPriceWhole,
   formatRating,
@@ -76,6 +79,7 @@ describe("concertDraftSchema", () => {
     date: "2023-10-31",
     venue: { name: "Hollywood Bowl", city: "Los Angeles", state: "CA", setlistfmId: "33d62cf9" },
     festivalName: null,
+    festivalDayLabel: null,
     setlistfmUrl: "https://www.setlist.fm/setlist/x.html",
     artists: [{ name: "boygenius", mbid: "3ceeddbd", setlistfmUrl: null }],
     ratingTenths: 0,
@@ -136,5 +140,52 @@ describe("lineupSummary", () => {
     );
     expect(lineupSummary(["Phoebe Bridgers"])).toBe("Phoebe Bridgers");
     expect(lineupSummary([])).toBe("");
+  });
+});
+
+describe("log card helpers", () => {
+  it("lists up to two supporting acts, then a count", () => {
+    expect(supportingActsLine(["Phoebe Bridgers"])).toBe("");
+    expect(supportingActsLine(["Phoebe Bridgers", "MUNA"])).toBe("with MUNA");
+    expect(supportingActsLine(["Phoebe Bridgers", "MUNA", "Sloppy Jane"])).toBe(
+      "with MUNA, Sloppy Jane",
+    );
+    const bonnaroo = [
+      "Tyler, the Creator",
+      "Doechii",
+      "Clairo",
+      ...Array.from({ length: 16 }, (_, i) => `Act ${i}`),
+    ];
+    expect(supportingActsLine(bonnaroo)).toBe("with Doechii, Clairo + 16 more");
+  });
+
+  it("labels festival days", () => {
+    expect(festivalLabel("Bonnaroo", "Day 3")).toBe("Bonnaroo · Day 3");
+    expect(festivalLabel("Bonnaroo", null)).toBe("Bonnaroo");
+  });
+});
+
+describe("editLogSchema", () => {
+  const id = "10000000-0000-4000-a000-000000000001";
+  it("takes existing artists by id and new ones by name", () => {
+    const ok = editLogSchema.safeParse({
+      logId: id,
+      artists: [{ artistId: "40000000-0000-4000-a000-000000000002" }, { name: " New Act " }],
+      ratingTenths: null,
+      ticketPriceCents: 0,
+      notes: "",
+    });
+    expect(ok.success && ok.data.artists[1]).toEqual({ name: "New Act" });
+  });
+
+  it("needs an artist and valid ids", () => {
+    const base = { logId: id, ratingTenths: null, ticketPriceCents: null, notes: "" };
+    expect(editLogSchema.safeParse({ ...base, artists: [] }).success).toBe(false);
+    expect(editLogSchema.safeParse({ ...base, artists: [{ artistId: "nope" }] }).success).toBe(
+      false,
+    );
+    expect(
+      editLogSchema.safeParse({ ...base, logId: "nope", artists: [{ name: "A" }] }).success,
+    ).toBe(false);
   });
 });

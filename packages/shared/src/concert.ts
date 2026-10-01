@@ -181,6 +181,8 @@ export const concertDraftSchema = z.object({
   date: isoDateSchema,
   venue: draftVenueSchema,
   festivalName: z.string().trim().max(200).nullable(),
+  /** "Day 3" or "Weekend 2 · Day 1", from the festival search. */
+  festivalDayLabel: z.string().trim().max(40).nullable(),
   setlistfmUrl: z.string().max(500).nullable(),
   artists: z.array(draftArtistSchema).min(1, { error: "Add at least one artist." }).max(200),
   ratingTenths: z.number().int().min(0).max(100).nullable(),
@@ -198,6 +200,35 @@ export const manualShowSchema = z.object({
   festivalName: z.string().trim().max(200),
 });
 export type ManualShowInput = z.infer<typeof manualShowSchema>;
+
+/** Editing a saved log: the lineup (existing artists by id, new ones by name) and details. */
+export const editLogSchema = z.object({
+  logId: z.uuid(),
+  artists: z
+    .array(
+      z.union([z.object({ artistId: z.uuid() }), z.object({ name: draftArtistSchema.shape.name })]),
+    )
+    .min(1, { error: "Add at least one artist." })
+    .max(200),
+  ratingTenths: z.number().int().min(0).max(100).nullable(),
+  ticketPriceCents: z.number().int().min(0).max(MAX_PRICE_CENTS).nullable(),
+  notes: z.string().max(5000, { error: "Keep notes to 5,000 characters." }),
+});
+export type EditLogInput = z.infer<typeof editLogSchema>;
+
+/** A log card's second line: "with Doechii, Clairo + 16 more" (empty for a solo show). */
+export function supportingActsLine(lineup: string[]): string {
+  const supporting = lineup.slice(1);
+  if (supporting.length === 0) return "";
+  const shown = supporting.slice(0, 2).join(", ");
+  const more = supporting.length - 2;
+  return more > 0 ? `with ${shown} + ${more} more` : `with ${shown}`;
+}
+
+/** "Bonnaroo · Day 3", or just the festival name when the day isn't known. */
+export function festivalLabel(festivalName: string, dayLabel: string | null): string {
+  return dayLabel ? `${festivalName} · ${dayLabel}` : festivalName;
+}
 
 /** "Phoebe Bridgers + 2 more". */
 export function lineupSummary(artistNames: string[]): string {

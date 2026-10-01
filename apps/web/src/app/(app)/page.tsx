@@ -1,25 +1,44 @@
+import { hasLogFilters, logFiltersToQuery, parseLogFilters } from "@musicjunkie/shared";
 import { requireViewer } from "@/lib/auth";
+import { fetchFilterOptions, fetchLogPage } from "@/lib/concerts";
+import { LogView } from "./log-view";
 
-// Placeholder home. The concert log arrives with "Add concert" in Phase 2 and the log in Phase 3.
-export default async function HomePage() {
+// The log (home): the viewer's concerts, newest show first, with search and filters in the URL.
+export default async function LogPage({ searchParams }: PageProps<"/">) {
   const { supabase, profile } = await requireViewer();
-  const { count } = await supabase
-    .from("concert_logs")
-    .select("id", { count: "exact", head: true })
-    .eq("user_id", profile.id);
-  const logged = count ?? 0;
+  const filters = parseLogFilters(await searchParams);
+  const filtered = hasLogFilters(filters);
 
+  const [page, options, totalLogged, venueName] = await Promise.all([
+    fetchLogPage(supabase, profile.id, filters),
+    fetchFilterOptions(supabase, profile.id),
+    filtered
+      ? supabase
+          .from("concert_logs")
+          .select("id", { count: "exact", head: true })
+          .eq("user_id", profile.id)
+          .then(({ count }) => count ?? 0)
+      : null,
+    filters.venueId
+      ? supabase
+          .from("venues")
+          .select("name")
+          .eq("id", filters.venueId)
+          .maybeSingle()
+          .then(({ data }) => data?.name ?? "Venue")
+      : null,
+  ]);
+
+  const query = logFiltersToQuery(filters);
   return (
-    <>
-      <h1 className="text-3xl font-extrabold">Hi, {profile.display_name}</h1>
-      <div className="mt-6 rounded-xl border border-border bg-surface p-6">
-        <p className="font-semibold">
-          {logged === 0
-            ? "No concerts logged yet"
-            : `${logged} ${logged === 1 ? "concert" : "concerts"} logged`}
-        </p>
-        <p className="mt-1 text-muted">Your full concert log will show up here.</p>
-      </div>
-    </>
+    <LogView
+      query={query}
+      filters={filters}
+      initialPage={page}
+      totalLogged={totalLogged ?? page.total}
+      years={options.years}
+      states={options.states}
+      venueName={venueName}
+    />
   );
 }

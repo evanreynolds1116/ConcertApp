@@ -1,11 +1,15 @@
 # Progress
 
-**Current phase:** Phase 2 done. Next up: Phase 3.
+**Current phase:** Phase 3 done. Next up: Phase 4.
 **Last updated:** 2026-09-30
 
 ## Next step
 
-Start Phase 3: the log list (newest first, 20 per page, cards with headliner + up to two supporting acts), artist search and year/month/state filters, and the full concert detail page ("Also here", edit, delete), building on the minimal `/concerts/[id]` page from Phase 2. Edit needs a lineup/details update path (probably an `update_log` function mirroring `log_concert`).
+Start Phase 4 (Stats):
+- `user_stats`, `leaderboard` and `stats_by_year` functions. Make them `security invoker` (or check `can_view`), and add the "Stats and leaderboards" row to the pgTAP privacy matrix.
+- The Stats screen and the four leaderboards.
+- Leaderboard rows link to the log, which already accepts the filters: `/?venue=<id>`, `/?city=Portland&state=OR`, `/?state=TN`, `/?artist=<name>`. An artist search is a substring match, so a leaderboard artist link may also catch similar names. Consider an exact `artistId` filter in `user_log` for that.
+- Check against hand-counted seed data, including Portland, OR vs Portland, ME.
 
 To use Add concert locally, run `pnpm functions:serve` alongside `pnpm dev`.
 
@@ -53,11 +57,16 @@ To use Add concert locally, run `pnpm functions:serve` alongside `pnpm dev`.
 
 ## Phase 3: Log and concert detail
 
-- [ ] Log list, newest first, 20 per page, cards show headliner + up to two supporting acts
-- [ ] Artist search and year/month/state filters
-- [ ] Concert detail page with "Also here"
-- [ ] Edit and delete
-- [ ] Done when: filters combine correctly and lineup edits show up everywhere
+- [x] Log list, newest first, 20 per page ("Load more"), cards show headliner + up to two supporting acts, festival chip ("Bonnaroo · Day 4"), rating
+- [x] Artist search and year/month/state filters, plus venue and city filters (for Phase 4 leaderboard links). All in the URL, with removable chips.
+- [x] Concert detail page with "Also here"
+- [x] Edit (same lineup and details editors as Add concert) and delete (confirm dialog)
+- [x] Done when: filters combine correctly and lineup edits show up everywhere. Checked in the browser on 2026-09-30 as pat:
+  - year+state, artist+year+state and an empty combination; city (Portland, OR) and venue links
+  - editing the Hollywood Bowl lineup (new headliner, removed and added artists, new rating, cleared price) updated the concert page, the log card and the artist search
+  - delete, privacy (404 for a private log, read-only for a followed user's log) and paging (25 logs)
+
+  Covered by 38 pgTAP tests (`05_log_browse_and_edit`), shared unit tests and 4 API smoke tests.
 
 ## Phase 4: Stats
 
@@ -149,6 +158,16 @@ Record anything decided that isn't in the spec, with the date.
 - 2026-09-30 (Phase 2): A session whose account no longer exists (deleted, or wiped by `db:reset`) is cleared via `/auth/reset-session` instead of looping between the proxy and the pages.
 - 2026-09-30 (Phase 2): The header now has an "Add concert" button (the rest of the main nav still arrives with its phases).
 
+- 2026-09-30 (Phase 3): Festival days store their label. A new nullable `shows.festival_day_label` ("Day 3", "Weekend 2 · Day 1") is saved by `log_concert` from the festival search, like `festival_name` (first non-null wins). Log cards show "Bonnaroo · Day 3" as in the mockup; manual festival entries show just the name. Approved by the user.
+- 2026-09-30 (Phase 3): Log filters:
+  - Month works on its own (e.g. every June) or with a year. Unlike the add-concert search, nothing forces a year first.
+  - A city filter always carries its state ("City, ST"), shown as one chip.
+  - Year and state dropdowns list only the values in the user's log.
+  - Artist search is a case-insensitive substring match on anyone in the lineup.
+- 2026-09-30 (Phase 3): Edit is a single page with the lineup editor and the details fields, rather than the add flow's two steps. Venue, date and festival name can't be edited: they belong to the shared show. Edited lineups send existing artists by id and new ones by name (matched like manual entries), and `update_log` replaces the lineup and details in one transaction.
+- 2026-09-30 (Phase 3): "Also here" excludes both the viewer and the log's owner. On a friend's log it shows other people you follow who were there.
+- 2026-09-30 (Phase 3): Database functions for the log (`user_log`, `log_filter_options`, `also_here`) run as the caller (security invoker), so RLS applies and Phase 5 profiles can reuse them for other users.
+
 **Open questions (to decide):**
 
 _None right now._
@@ -160,7 +179,9 @@ _None right now._
   - Outside Lands and Summerfest aren't in the festival list (no reliable filing).
   - A Coachella search takes about 12 s and can report `incomplete`.
 - `log_concert` trusts the artist names, MusicBrainz IDs and venue IDs the client sends. A tampered request could create a shared artist with a wrong name for a real ID. Fine for MVP; harden later by having the Edge Function sign the lineups it returns.
-- No Playwright end-to-end tests yet. The add-concert flows were checked by hand in the browser. Playwright needs a browser download (~hundreds of MB to the user profile), so ask before adding it (suggest Phase 6).
+- No Playwright end-to-end tests yet. The add-concert and log flows were checked by hand in the browser. Playwright needs a browser download (~hundreds of MB to the user profile), so ask before adding it (suggest Phase 6).
+- The concert page's "Log" back link always goes to your own log, even on someone else's concert. Revisit with profiles in Phase 5.
+- In the Claude browser pane, the Next dev hot-reload websocket sometimes logs connection errors after server restarts. A direct connection test succeeds, and this is dev-only.
 - ESLint 9 is marked deprecated in favour of 10. Stay on 9 until `eslint-config-next` supports 10.
 - The Edge Function isn't deployed anywhere yet. For the hosted project (Phase 6): `pnpm supabase functions deploy setlist-search` and `pnpm supabase secrets set SETLISTFM_API_KEY=...`.
 

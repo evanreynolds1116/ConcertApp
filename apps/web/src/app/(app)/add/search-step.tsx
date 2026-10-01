@@ -4,14 +4,15 @@ import {
   EARLIEST_YEAR,
   formatCityState,
   formatShowDate,
-  showDateParts,
   US_STATES,
   usToday,
   type SearchResult,
 } from "@musicjunkie/shared";
 import { useEffect, useRef, useState } from "react";
 import { fetchLineup, searchSetlists } from "@/lib/setlist-search";
-import { lineupRow, type ShowDraft } from "./draft";
+import { DateTile } from "@/components/concert/date-tile";
+import { lineupRow } from "@/components/concert/lineup-editor";
+import type { ShowDraft } from "./draft";
 import { StepHeader } from "./step-header";
 
 export type SearchState = {
@@ -164,7 +165,7 @@ export function SearchStep({
           setlistfmId: result.venue.setlistfmId,
         },
         festivalName: result.kind === "festival-day" ? result.festivalName : null,
-        dayLabel: result.kind === "festival-day" ? result.dayLabel : null,
+        festivalDayLabel: result.kind === "festival-day" ? result.dayLabel : null,
         setlistfmUrl:
           lineup.setlistfmUrl ?? (result.kind === "concert" ? result.setlistfmUrl : null),
         artists: lineup.artists.map((a) =>
@@ -438,19 +439,5 @@ function ResultsView({ results, isFestival, picking, onPick, onLoadMore }: Resul
         </button>
       )}
     </>
-  );
-}
-
-function DateTile({ iso }: { iso: string }) {
-  const { month, day, year } = showDateParts(iso);
-  return (
-    <span
-      className="flex h-15 w-13 shrink-0 flex-col items-center justify-center rounded-lg bg-surface"
-      aria-hidden
-    >
-      <span className="text-[11px] font-bold tracking-widest text-accent">{month}</span>
-      <span className="text-xl leading-tight font-extrabold">{day}</span>
-      <span className="text-[11px] text-muted">{year}</span>
-    </span>
   );
 }

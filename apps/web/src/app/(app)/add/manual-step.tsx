@@ -43,7 +43,7 @@ export function ManualStep({ initial, onBack, onContinue }: ManualStepProps) {
       date: v.date,
       venue: { name: v.venueName, city: v.city, state: v.state, setlistfmId: null },
       festivalName: v.festivalName || null,
-      dayLabel: null,
+      festivalDayLabel: null,
       setlistfmUrl: null,
       artists: [],
     });

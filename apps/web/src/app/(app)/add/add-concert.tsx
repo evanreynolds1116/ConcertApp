@@ -1,15 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { DetailsStep, type Details } from "./details-step";
+import { emptyDetails, type Details } from "@/components/concert/details-fields";
+import { DetailsStep } from "./details-step";
 import type { ShowDraft } from "./draft";
 import { LineupStep } from "./lineup-step";
 import { ManualStep } from "./manual-step";
 import { initialSearch, SearchStep, type KeyedResults, type SearchState } from "./search-step";
 
 type Step = "search" | "manual" | "lineup" | "details";
-
-const emptyDetails: Details = { ratingTenths: null, price: "", notes: "", festivalName: "" };
 
 /** The add-concert flow: search (or manual entry) -> lineup -> details -> save. */
 export function AddConcert() {
@@ -18,6 +17,7 @@ export function AddConcert() {
   const [results, setResults] = useState<KeyedResults>(null);
   const [draft, setDraft] = useState<ShowDraft | null>(null);
   const [details, setDetails] = useState<Details>(emptyDetails);
+  const [festivalName, setFestivalName] = useState("");
 
   function go(next: Step) {
     setStep(next);
@@ -26,7 +26,8 @@ export function AddConcert() {
 
   function startDraft(next: ShowDraft) {
     setDraft(next);
-    setDetails({ ...emptyDetails, festivalName: next.festivalName ?? "" });
+    setDetails(emptyDetails);
+    setFestivalName(next.festivalName ?? "");
     go("lineup");
   }
 
@@ -57,6 +58,8 @@ export function AddConcert() {
         draft={draft}
         details={details}
         onDetailsChange={setDetails}
+        festivalName={festivalName}
+        onFestivalNameChange={setFestivalName}
         onBack={() => go("lineup")}
       />
     );

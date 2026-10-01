@@ -226,6 +226,7 @@ export type Database = {
       shows: {
         Row: {
           date: string;
+          festival_day_label: string | null;
           festival_name: string | null;
           id: string;
           setlistfm_url: string | null;
@@ -233,6 +234,7 @@ export type Database = {
         };
         Insert: {
           date: string;
+          festival_day_label?: string | null;
           festival_name?: string | null;
           id?: string;
           setlistfm_url?: string | null;
@@ -240,6 +242,7 @@ export type Database = {
         };
         Update: {
           date?: string;
+          festival_day_label?: string | null;
           festival_name?: string | null;
           id?: string;
           setlistfm_url?: string | null;
@@ -284,12 +287,22 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
+      also_here: {
+        Args: { p_log_id: string };
+        Returns: {
+          avatar_url: string;
+          display_name: string;
+          user_id: string;
+          username: string;
+        }[];
+      };
       can_view: { Args: { owner_id: string; viewer_id: string }; Returns: boolean };
       is_username_available: { Args: { name: string }; Returns: boolean };
       log_concert: {
         Args: {
           p_artists: Json;
           p_date: string;
+          p_festival_day_label?: string;
           p_festival_name?: string;
           p_notes?: string;
           p_rating_tenths?: number;
@@ -299,6 +312,49 @@ export type Database = {
           p_venue: Json;
         };
         Returns: string;
+      };
+      log_filter_options: {
+        Args: { p_user_id: string };
+        Returns: {
+          states: string[];
+          years: number[];
+        }[];
+      };
+      update_log: {
+        Args: {
+          p_artists: Json;
+          p_log_id: string;
+          p_notes: string;
+          p_rating_tenths: number;
+          p_ticket_price_cents: number;
+        };
+        Returns: undefined;
+      };
+      user_log: {
+        Args: {
+          p_artist?: string;
+          p_city?: string;
+          p_limit?: number;
+          p_month?: number;
+          p_offset?: number;
+          p_state?: string;
+          p_user_id: string;
+          p_venue_id?: string;
+          p_year?: number;
+        };
+        Returns: {
+          artists: string[];
+          city: string;
+          festival_day_label: string;
+          festival_name: string;
+          log_id: string;
+          rating_tenths: number;
+          show_date: string;
+          state: string;
+          total_count: number;
+          venue_id: string;
+          venue_name: string;
+        }[];
       };
     };
     Enums: {
