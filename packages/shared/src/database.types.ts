@@ -168,16 +168,19 @@ export type Database = {
           artist_id: string;
           log_id: string;
           position: number;
+          setlistfm_url: string | null;
         };
         Insert: {
           artist_id: string;
           log_id: string;
           position: number;
+          setlistfm_url?: string | null;
         };
         Update: {
           artist_id?: string;
           log_id?: string;
           position?: number;
+          setlistfm_url?: string | null;
         };
         Relationships: [
           {

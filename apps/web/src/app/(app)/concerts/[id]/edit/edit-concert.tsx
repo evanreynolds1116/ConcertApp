@@ -29,7 +29,9 @@ type EditConcertProps = {
 /** Edit a saved concert: the same lineup and details editors as Add concert. */
 export function EditConcert({ logId, show, lineup, log }: EditConcertProps) {
   const [rows, setRows] = useState<LineupRow[]>(() =>
-    lineup.map((a) => lineupRow({ name: a.name, mbid: null, setlistfmUrl: null, artistId: a.id })),
+    lineup.map((a) =>
+      lineupRow({ name: a.name, mbid: null, setlistfmUrl: null, setlistUrl: null, artistId: a.id }),
+    ),
   );
   const [details, setDetails] = useState<Details>(() => detailsFromLog(log));
   const [priceError, setPriceError] = useState<string | null>(null);

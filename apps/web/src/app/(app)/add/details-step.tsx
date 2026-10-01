@@ -42,7 +42,12 @@ export function DetailsStep({
       festivalName: draft.festivalName === null ? null : festivalName.trim() || null,
       festivalDayLabel: draft.festivalDayLabel,
       setlistfmUrl: draft.setlistfmUrl,
-      artists: draft.artists.map(({ name, mbid, setlistfmUrl }) => ({ name, mbid, setlistfmUrl })),
+      artists: draft.artists.map(({ name, mbid, setlistfmUrl, setlistUrl }) => ({
+        name,
+        mbid,
+        setlistfmUrl,
+        setlistUrl,
+      })),
       ratingTenths: details.ratingTenths,
       ticketPriceCents: cents,
       notes: details.notes.trim(),

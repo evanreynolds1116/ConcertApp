@@ -172,7 +172,12 @@ export function SearchStep({
         setlistfmUrl:
           lineup.setlistfmUrl ?? (result.kind === "concert" ? result.setlistfmUrl : null),
         artists: lineup.artists.map((a) =>
-          lineupRow({ name: a.name, mbid: a.mbid, setlistfmUrl: a.setlistfmUrl }),
+          lineupRow({
+            name: a.name,
+            mbid: a.mbid,
+            setlistfmUrl: a.setlistfmUrl,
+            setlistUrl: a.setlistUrl,
+          }),
         ),
       });
     } catch (e) {

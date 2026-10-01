@@ -181,7 +181,10 @@ const isoDateSchema = z
 export const draftArtistSchema = z.object({
   name: z.string().trim().min(1, { error: "Enter the artist's name." }).max(200),
   mbid: z.string().max(64).nullable(),
+  /** The artist's setlist.fm page. */
   setlistfmUrl: z.string().max(500).nullable(),
+  /** The artist's setlist at this show; the concert page links the headliner's. */
+  setlistUrl: z.string().max(500).nullable(),
 });
 export type DraftArtist = z.infer<typeof draftArtistSchema>;
 

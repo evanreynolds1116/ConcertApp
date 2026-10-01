@@ -19,7 +19,12 @@ export async function saveConcert(input: unknown): Promise<SaveResult> {
     p_source: d.source,
     p_date: d.date,
     p_venue: d.venue,
-    p_artists: d.artists.map(({ name, mbid, setlistfmUrl }) => ({ name, mbid, setlistfmUrl })),
+    p_artists: d.artists.map(({ name, mbid, setlistfmUrl, setlistUrl }) => ({
+      name,
+      mbid,
+      setlistfmUrl,
+      setlistUrl,
+    })),
     p_festival_name: d.festivalName ?? undefined,
     p_festival_day_label: d.festivalDayLabel ?? undefined,
     p_setlistfm_url: d.setlistfmUrl ?? undefined,

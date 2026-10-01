@@ -28,6 +28,7 @@ export type LineupRow = {
   name: string;
   mbid: string | null;
   setlistfmUrl: string | null;
+  setlistUrl: string | null;
   artistId?: string;
 };
 
@@ -68,7 +69,7 @@ export function LineupEditor({ rows, onChange }: LineupEditorProps) {
       setAddError(`${name} is already in the lineup.`);
       return;
     }
-    onChange([...rows, lineupRow({ name, mbid: null, setlistfmUrl: null })]);
+    onChange([...rows, lineupRow({ name, mbid: null, setlistfmUrl: null, setlistUrl: null })]);
     setNewName("");
     setAddError(null);
   }

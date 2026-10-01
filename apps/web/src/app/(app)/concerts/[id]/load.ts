@@ -14,14 +14,14 @@ export const loadConcert = cache(async (id: string) => {
   const { data } = await supabase
     .from("concert_logs")
     .select(
-      "id, user_id, rating_tenths, ticket_price_cents, notes, source, profiles!inner(username, display_name), shows!inner(date, festival_name, festival_day_label, setlistfm_url, venues!inner(name, city, state)), log_artists(position, artists!inner(id, name))",
+      "id, user_id, rating_tenths, ticket_price_cents, notes, source, profiles!inner(username, display_name), shows!inner(date, festival_name, festival_day_label, setlistfm_url, venues!inner(name, city, state)), log_artists(position, setlistfm_url, artists!inner(id, name))",
     )
     .eq("id", id)
     .maybeSingle();
   if (!data) return null;
   const lineup = [...data.log_artists]
     .sort((a, b) => a.position - b.position)
-    .map((a) => ({ id: a.artists.id, name: a.artists.name }));
+    .map((a) => ({ id: a.artists.id, name: a.artists.name, setlistUrl: a.setlistfm_url }));
   return {
     supabase,
     log: data,

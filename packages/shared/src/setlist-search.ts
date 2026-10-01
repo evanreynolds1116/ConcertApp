@@ -79,7 +79,10 @@ export type LineupRequest = {
 export type LineupArtist = {
   name: string;
   mbid: string | null;
+  /** The artist's setlist.fm page. */
   setlistfmUrl: string | null;
+  /** The artist's setlist at this show. */
+  setlistUrl: string | null;
   songCount: number;
 };
 

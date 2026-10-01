@@ -137,7 +137,7 @@ export default async function ConcertPage({ params }: PageProps<"/concerts/[id]"
         <p className="pt-4 text-xs text-subtle">
           Lineup from{" "}
           <a
-            href={show.setlistfm_url ?? "https://www.setlist.fm"}
+            href={lineup[0]?.setlistUrl ?? show.setlistfm_url ?? "https://www.setlist.fm"}
             target="_blank"
             rel="noreferrer"
             className="text-accent hover:text-accent-hover"

@@ -114,10 +114,13 @@ export function buildLineup(
         name: s.artist.name,
         mbid: s.artist.mbid || null,
         setlistfmUrl: s.artist.url ?? null,
+        setlistUrl: s.url || null,
         songCount: songs,
       });
     } else if (songs > existing.songCount) {
+      // Two setlists for one artist (early and late shows): keep the longer one.
       existing.songCount = songs;
+      existing.setlistUrl = s.url || existing.setlistUrl;
     }
   }
   return [...byArtist.values()].sort((a, b) => {

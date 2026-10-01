@@ -95,7 +95,7 @@ describe("concertDraftSchema", () => {
     festivalName: null,
     festivalDayLabel: null,
     setlistfmUrl: "https://www.setlist.fm/setlist/x.html",
-    artists: [{ name: "boygenius", mbid: "3ceeddbd", setlistfmUrl: null }],
+    artists: [{ name: "boygenius", mbid: "3ceeddbd", setlistfmUrl: null, setlistUrl: null }],
     ratingTenths: 0,
     ticketPriceCents: 0,
     notes: "",

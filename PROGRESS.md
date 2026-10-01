@@ -227,6 +227,7 @@ Record anything decided that isn't in the spec, with the date.
   - the 2019 and 2025–26 shows are listed by venue
   - each stop is one result, saved against its busiest stage, with no day label when it's a single day
   - placeholder venue names ("Parking Lot") are skipped when the stop has a real venue, so San Diego 2018 is saved as SDCCU Stadium
+- 2026-10-01 (manual testing): The concert page's "Lineup from setlist.fm" link goes to the headliner's own setlist at that show, approved by the user. Each lineup entry stores that artist's setlist link (`log_artists.setlistfm_url`, setlist.fm setlist pages only). Editing the lineup keeps the links, and the page falls back to the show's link when the headliner has none (for example, an artist added by hand). Existing local logs were backfilled from setlist.fm.
 - 2026-10-01 (manual testing): Leaderboards show the top 10 rows with a "Show all" button, approved by the user. The spec says every item is listed; with 173 artists that made Stats very long. Ranks still count every row.
 
 **Open questions (to decide):**

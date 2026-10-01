@@ -88,11 +88,17 @@ describe("buildLineup", () => {
   });
 
   it("lists an artist once when they have two setlists that day (early and late shows)", () => {
-    const lineup = buildLineup([
-      setlist({ artist: "boygenius", date: "2023-11-11", songs: 2 }),
-      setlist({ artist: "boygenius", date: "2023-11-11", songs: 3 }),
-    ]);
+    const early = setlist({ artist: "boygenius", date: "2023-11-11", songs: 2 });
+    const late = setlist({ artist: "boygenius", date: "2023-11-11", songs: 3 });
+    const lineup = buildLineup([early, late]);
     expect(lineup).toHaveLength(1);
     expect(lineup[0]!.songCount).toBe(3);
+    expect(lineup[0]!.setlistUrl).toBe(late.url); // the longer set
+  });
+
+  it("gives each artist a link to their own setlist at the show", () => {
+    const lineup = buildLineup(show);
+    expect(lineup.map((a) => a.setlistUrl)).toEqual([show[1]!.url, show[2]!.url, show[0]!.url]);
+    expect(lineup[0]!.setlistUrl).toMatch(/^https:\/\/www\.setlist\.fm\/setlist\//);
   });
 });
