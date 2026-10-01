@@ -194,7 +194,7 @@ Record anything decided that isn't in the spec, with the date.
 - 2026-09-30 (Phase 4): Charts follow the data-visualization guidance:
   - one series and no legend (the title names it)
   - bars at most 24px wide with a rounded top, square at the baseline
-  - value labels on the bars only when there are 10 or fewer; long ranges thin the year labels
+  - value labels on the bars and every year label whenever they fit (the chart measures its column width; 2026-10-01, replacing a fixed 10-bar cutoff); otherwise hover and the table give the values, and year labels thin evenly back from the latest year
   - a hover tooltip per bar, and a "Show as a table" view for keyboard and screen-reader users
 
   The mockup's 30px bars and labels on every bar were adjusted to these rules.
