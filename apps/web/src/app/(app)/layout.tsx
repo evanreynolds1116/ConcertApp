@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { MainNav } from "@/components/main-nav";
 import { requireViewer } from "@/lib/auth";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
@@ -10,18 +11,25 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           aria-label="Main"
           className="mx-auto flex h-16 w-full max-w-3xl items-center justify-between px-4"
         >
-          <Link href="/" className="text-xl font-extrabold text-accent">
-            Music Junkie
-          </Link>
-          <div className="flex items-center gap-4 text-sm">
+          <div className="flex items-center gap-3">
+            <Link href="/" className="text-xl font-extrabold text-accent">
+              <span className="hidden sm:inline">Music Junkie</span>
+              <span className="sm:hidden" aria-hidden>
+                MJ
+              </span>
+              <span className="sr-only sm:hidden">Music Junkie</span>
+            </Link>
+            <MainNav />
+          </div>
+          <div className="flex items-center gap-3 text-sm sm:gap-4">
             <Link
               href="/add"
-              className="flex h-9 items-center gap-1 rounded-full bg-accent px-3.5 font-bold text-on-accent hover:bg-accent-hover"
+              className="flex h-9 items-center gap-1 rounded-full bg-accent px-3.5 font-bold whitespace-nowrap text-on-accent hover:bg-accent-hover"
             >
               <span aria-hidden className="text-lg leading-none">
                 +
               </span>{" "}
-              Add concert
+              Add<span className="sr-only sm:not-sr-only">&nbsp;concert</span>
             </Link>
             <span className="hidden text-muted sm:inline">@{profile.username}</span>
             <Link href="/settings" className="font-semibold hover:text-accent">

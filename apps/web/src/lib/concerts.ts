@@ -36,6 +36,7 @@ export async function fetchLogPage(
   const { data, error } = await supabase.rpc("user_log", {
     p_user_id: userId,
     p_artist: filters.artist,
+    p_artist_id: filters.artistId,
     p_year: filters.year,
     p_month: filters.month,
     p_state: filters.state,
@@ -47,6 +48,53 @@ export async function fetchLogPage(
   if (error) throw new Error(`user_log failed: ${error.message}`);
   const entries = (data ?? []) as unknown as LogEntry[];
   return { entries, total: entries[0]?.total_count ?? 0 };
+}
+
+export type UserStats = {
+  concerts: number;
+  artists: number;
+  venues: number;
+  cities: number;
+  states: number;
+  spent_cents: number;
+  priced_concerts: number;
+  first_show: string | null;
+};
+
+export type YearStats = {
+  year: number;
+  concerts: number;
+  spent_cents: number;
+  priced_concerts: number;
+};
+
+export type LeaderboardKind = "artist" | "venue" | "city" | "state";
+export type LeaderboardRow = {
+  item_id: string | null;
+  name: string;
+  city: string | null;
+  state: string | null;
+  concerts: number;
+};
+
+/** The Stats screen's data. RLS applies: someone else's private stats come back empty. */
+export async function fetchStats(supabase: Supabase, userId: string) {
+  const kinds: LeaderboardKind[] = ["artist", "venue", "city", "state"];
+  const [stats, byYear, ...boards] = await Promise.all([
+    supabase.rpc("user_stats", { p_user_id: userId }).single(),
+    supabase.rpc("stats_by_year", { p_user_id: userId }),
+    ...kinds.map((kind) => supabase.rpc("leaderboard", { p_user_id: userId, p_kind: kind })),
+  ]);
+  for (const r of [stats, byYear, ...boards]) {
+    if (r.error) throw new Error(`stats failed: ${r.error.message}`);
+  }
+  return {
+    stats: stats.data as unknown as UserStats,
+    byYear: (byYear.data ?? []) as YearStats[],
+    leaderboards: Object.fromEntries(
+      kinds.map((kind, i) => [kind, (boards[i]!.data ?? []) as LeaderboardRow[]]),
+    ) as Record<LeaderboardKind, LeaderboardRow[]>,
+  };
 }
 
 export async function fetchFilterOptions(supabase: Supabase, userId: string) {

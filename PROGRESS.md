@@ -1,15 +1,20 @@
 # Progress
 
-**Current phase:** Phase 3 done. Next up: Phase 4.
+**Current phase:** Phase 4 done. Next up: Phase 5.
 **Last updated:** 2026-09-30
 
 ## Next step
 
-Start Phase 4 (Stats):
-- `user_stats`, `leaderboard` and `stats_by_year` functions. Make them `security invoker` (or check `can_view`), and add the "Stats and leaderboards" row to the pgTAP privacy matrix.
-- The Stats screen and the four leaderboards.
-- Leaderboard rows link to the log, which already accepts the filters: `/?venue=<id>`, `/?city=Portland&state=OR`, `/?state=TN`, `/?artist=<name>`. An artist search is a substring match, so a leaderboard artist link may also catch similar names. Consider an exact `artistId` filter in `user_log` for that.
-- Check against hand-counted seed data, including Portland, OR vs Portland, ME.
+Start Phase 5 (Social):
+- People search
+- Follow/unfollow and requests (send, cancel, accept, decline)
+- Other users' profiles, including the locked private view. Reuse `user_log`, `user_stats`, `leaderboard` and `stats_by_year` with the profile's user id; they already apply privacy.
+- The activity feed
+- Settings additions moved here: edit username, display name and avatar; delete account
+
+Also revisit the concert page's "Log" back link on other people's concerts.
+
+The database side of following is already built and tested (Phase 1), so Phase 5 is mostly screens plus a feed query and people search.
 
 To use Add concert locally, run `pnpm functions:serve` alongside `pnpm dev`.
 
@@ -70,11 +75,11 @@ To use Add concert locally, run `pnpm functions:serve` alongside `pnpm dev`.
 
 ## Phase 4: Stats
 
-- [ ] `user_stats`, `leaderboard` and `stats_by_year` functions, written as `security invoker` (or checking `can_view`) so they respect privacy
-- [ ] Add the "Stats and leaderboards" row to the pgTAP privacy matrix (carried over from Phase 1)
-- [ ] Stats screen: five counts, money spent card, concerts per year and spend per year charts
-- [ ] Leaderboards: artists, venues, cities, states, each linking to a filtered log
-- [ ] Done when: stats match hand-counted seed data, including the Portland, OR / Portland, ME case
+- [x] `user_stats`, `leaderboard` and `stats_by_year` functions, `security invoker` so they read through RLS
+- [x] "Stats and leaderboards" privacy row tested (in `06_stats`, carried over from Phase 1). Making `user_stats` `security definer` breaks the test, as it should.
+- [x] Stats screen: five counts, money spent card, concerts per year and spend per year charts (hover tooltips with coverage, table view)
+- [x] Leaderboards: artists, venues, cities, states, each linking to a filtered log (artist rows use a new exact `artistId` filter)
+- [x] Done when: stats match hand-counted seed data, including the Portland, OR / Portland, ME case. The hand counts are written out in `supabase/tests/database/06_stats.test.sql` and checked by 19 pgTAP tests. The Stats screen showed the same numbers in the browser on 2026-09-30 (pat: 4 concerts, 8 artists, 4 venues, 4 cities, 4 states, $435 across 3 of 4).
 
 ## Phase 5: Social
 
@@ -167,6 +172,22 @@ Record anything decided that isn't in the spec, with the date.
 - 2026-09-30 (Phase 3): Edit is a single page with the lineup editor and the details fields, rather than the add flow's two steps. Venue, date and festival name can't be edited: they belong to the shared show. Edited lineups send existing artists by id and new ones by name (matched like manual entries), and `update_log` replaces the lineup and details in one transaction.
 - 2026-09-30 (Phase 3): "Also here" excludes both the viewer and the log's owner. On a friend's log it shows other people you follow who were there.
 - 2026-09-30 (Phase 3): Database functions for the log (`user_log`, `log_filter_options`, `also_here`) run as the caller (security invoker), so RLS applies and Phase 5 profiles can reuse them for other users.
+
+- 2026-09-30 (Phase 4): Stats details the spec didn't pin down:
+  - A $0 ticket counts as priced (it's a real price), so it's included in "N of M" coverage.
+  - "All time · since <Mon YYYY>" uses the earliest show date.
+  - Leaderboard ranks share places on ties (1, 1, 3). Rows within a tie are A–Z, ignoring case.
+  - A city row shows the most common spelling of that city's name.
+  - The Money spent card and Spend per year chart are hidden when no log has a price, as the spec says.
+- 2026-09-30 (Phase 4): Charts follow the data-visualization guidance:
+  - one series and no legend (the title names it)
+  - bars at most 24px wide with a rounded top, square at the baseline
+  - value labels on the bars only when there are 10 or fewer; long ranges thin the year labels
+  - a hover tooltip per bar, and a "Show as a table" view for keyboard and screen-reader users
+
+  The mockup's 30px bars and labels on every bar were adjusted to these rules.
+- 2026-09-30 (Phase 4): `user_log` gained `p_artist_id` (exact artist) for leaderboard links. The URL parameter is `artistId`, and the chip shows the artist's name.
+- 2026-09-30 (Phase 4): The header now has the main nav's Log and Stats links (with `aria-current`). On phones, "Add concert" shows as "+ Add" (screen readers still hear "Add concert") and the logo as "MJ".
 
 **Open questions (to decide):**
 

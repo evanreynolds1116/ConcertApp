@@ -298,6 +298,16 @@ export type Database = {
       };
       can_view: { Args: { owner_id: string; viewer_id: string }; Returns: boolean };
       is_username_available: { Args: { name: string }; Returns: boolean };
+      leaderboard: {
+        Args: { p_kind: string; p_user_id: string };
+        Returns: {
+          city: string;
+          concerts: number;
+          item_id: string;
+          name: string;
+          state: string;
+        }[];
+      };
       log_concert: {
         Args: {
           p_artists: Json;
@@ -320,6 +330,15 @@ export type Database = {
           years: number[];
         }[];
       };
+      stats_by_year: {
+        Args: { p_user_id: string };
+        Returns: {
+          concerts: number;
+          priced_concerts: number;
+          spent_cents: number;
+          year: number;
+        }[];
+      };
       update_log: {
         Args: {
           p_artists: Json;
@@ -333,6 +352,7 @@ export type Database = {
       user_log: {
         Args: {
           p_artist?: string;
+          p_artist_id?: string;
           p_city?: string;
           p_limit?: number;
           p_month?: number;
@@ -354,6 +374,19 @@ export type Database = {
           total_count: number;
           venue_id: string;
           venue_name: string;
+        }[];
+      };
+      user_stats: {
+        Args: { p_user_id: string };
+        Returns: {
+          artists: number;
+          cities: number;
+          concerts: number;
+          first_show: string;
+          priced_concerts: number;
+          spent_cents: number;
+          states: number;
+          venues: number;
         }[];
       };
     };

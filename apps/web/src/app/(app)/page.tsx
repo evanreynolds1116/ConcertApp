@@ -9,7 +9,7 @@ export default async function LogPage({ searchParams }: PageProps<"/">) {
   const filters = parseLogFilters(await searchParams);
   const filtered = hasLogFilters(filters);
 
-  const [page, options, totalLogged, venueName] = await Promise.all([
+  const [page, options, totalLogged, venueName, artistName] = await Promise.all([
     fetchLogPage(supabase, profile.id, filters),
     fetchFilterOptions(supabase, profile.id),
     filtered
@@ -27,6 +27,14 @@ export default async function LogPage({ searchParams }: PageProps<"/">) {
           .maybeSingle()
           .then(({ data }) => data?.name ?? "Venue")
       : null,
+    filters.artistId
+      ? supabase
+          .from("artists")
+          .select("name")
+          .eq("id", filters.artistId)
+          .maybeSingle()
+          .then(({ data }) => data?.name ?? "Artist")
+      : null,
   ]);
 
   const query = logFiltersToQuery(filters);
@@ -39,6 +47,7 @@ export default async function LogPage({ searchParams }: PageProps<"/">) {
       years={options.years}
       states={options.states}
       venueName={venueName}
+      artistName={artistName}
     />
   );
 }

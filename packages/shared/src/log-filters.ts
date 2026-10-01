@@ -5,6 +5,8 @@ import { EARLIEST_YEAR, US_STATES, usToday } from "./concert";
 
 export type LogFilters = {
   artist?: string;
+  /** One exact artist (leaderboard links), unlike `artist`, which matches part of a name. */
+  artistId?: string;
   year?: number;
   month?: number;
   state?: string;
@@ -45,6 +47,9 @@ export function parseLogFilters(params: Params): LogFilters {
   const artist = get(params, "artist");
   if (artist) filters.artist = artist.slice(0, 100);
 
+  const artistId = get(params, "artistId");
+  if (artistId && UUID.test(artistId)) filters.artistId = artistId.toLowerCase();
+
   const year = Number(get(params, "year"));
   if (Number.isInteger(year) && year >= EARLIEST_YEAR && year <= Number(usToday().slice(0, 4)))
     filters.year = year;
@@ -68,6 +73,7 @@ export function parseLogFilters(params: Params): LogFilters {
 export function logFiltersToQuery(filters: LogFilters): string {
   const q = new URLSearchParams();
   if (filters.artist) q.set("artist", filters.artist);
+  if (filters.artistId) q.set("artistId", filters.artistId);
   if (filters.year) q.set("year", String(filters.year));
   if (filters.month) q.set("month", String(filters.month));
   if (filters.state) q.set("state", filters.state);

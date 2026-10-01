@@ -22,6 +22,7 @@ type LogViewProps = {
   years: number[];
   states: string[];
   venueName: string | null;
+  artistName: string | null;
 };
 
 const SEARCH_DEBOUNCE_MS = 300;
@@ -34,6 +35,7 @@ export function LogView({
   years,
   states,
   venueName,
+  artistName,
 }: LogViewProps) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
@@ -59,7 +61,7 @@ export function LogView({
   }, [artistText, filters, apply]);
 
   const filtered = hasLogFilters(filters);
-  const chips = activeChips(filters, venueName);
+  const chips = activeChips(filters, venueName, artistName);
   const withCurrent = <T,>(list: T[], current: T | undefined) =>
     current !== undefined && !list.includes(current) ? [current, ...list] : list;
 
@@ -185,8 +187,19 @@ export function LogView({
 
 type Chip = { key: string; label: string; remove: (f: LogFilters) => LogFilters };
 
-function activeChips(filters: LogFilters, venueName: string | null): Chip[] {
+function activeChips(
+  filters: LogFilters,
+  venueName: string | null,
+  artistName: string | null,
+): Chip[] {
   const chips: Chip[] = [];
+  if (filters.artistId) {
+    chips.push({
+      key: "artistId",
+      label: artistName ?? "Artist",
+      remove: (f) => ({ ...f, artistId: undefined }),
+    });
+  }
   if (filters.artist)
     chips.push({
       key: "artist",

@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
+  formatMonthYear,
+  spendCoverage,
   concertDraftSchema,
   editLogSchema,
   festivalLabel,
@@ -70,6 +72,18 @@ describe("dates", () => {
 
   it("uses the latest US time zone for today", () => {
     expect(usToday(new Date("2026-10-01T05:00:00Z"))).toBe("2026-09-30");
+  });
+});
+
+describe("stats wording", () => {
+  it("describes spend with its coverage, as the spec words it", () => {
+    expect(spendCoverage(124000, 18, 25)).toBe("$1,240 across 18 of 25 concerts");
+    expect(spendCoverage(31000, 4, 6)).toBe("$310 across 4 of 6 concerts");
+    expect(spendCoverage(0, 1, 1)).toBe("$0 across 1 of 1 concert");
+  });
+
+  it("formats month and year", () => {
+    expect(formatMonthYear("2019-03-14")).toBe("Mar 2019");
   });
 });
 

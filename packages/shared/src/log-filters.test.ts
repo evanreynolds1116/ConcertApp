@@ -56,6 +56,15 @@ describe("logFiltersToQuery", () => {
   });
 });
 
+describe("exact artist filter", () => {
+  it("reads and writes artistId (a uuid)", () => {
+    const id = "40000000-0000-4000-a000-000000000001";
+    expect(parseLogFilters(new URLSearchParams(`artistId=${id}`))).toEqual({ artistId: id });
+    expect(parseLogFilters(new URLSearchParams("artistId=boygenius"))).toEqual({});
+    expect(logFiltersToQuery({ artistId: id })).toBe(`artistId=${id}`);
+  });
+});
+
 describe("hasLogFilters", () => {
   it("is false only with no filters", () => {
     expect(hasLogFilters({})).toBe(false);

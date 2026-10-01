@@ -141,6 +141,23 @@ export function showDateParts(iso: string): { month: string; day: string; year: 
   };
 }
 
+/** "2019-03-14" -> "Mar 2019". */
+export function formatMonthYear(iso: string): string {
+  return utc(iso).toLocaleDateString("en-US", { month: "short", year: "numeric", timeZone: "UTC" });
+}
+
+/**
+ * Money spent with its coverage (docs/spec.md, "Stats definitions"):
+ * "$1,240 across 18 of 25 concerts". Only logs with a price count toward the total.
+ */
+export function spendCoverage(
+  spentCents: number,
+  pricedConcerts: number,
+  concerts: number,
+): string {
+  return `${formatPriceWhole(spentCents)} across ${pricedConcerts} of ${concerts} ${concerts === 1 ? "concert" : "concerts"}`;
+}
+
 /** Today's date in the US (Hawaii, the latest US time zone), as ISO. */
 export function usToday(now: Date = new Date()): string {
   return new Date(now.getTime() - 10 * 60 * 60 * 1000).toISOString().slice(0, 10);
