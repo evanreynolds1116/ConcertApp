@@ -34,8 +34,9 @@ export function BarChart({ title, bars, summary, columns }: BarChartProps) {
   const [active, setActive] = useState<number | null>(null);
   const max = Math.max(1, ...bars.map((b) => b.value));
   const labelCaps = bars.length <= LABEL_ALL_MAX;
-  // Thin out axis labels on long ranges: roughly 8 labels, always including the last year.
-  const labelEvery = Math.max(1, Math.ceil(bars.length / 8));
+  // Label every year when there's room. On long ranges show roughly 8 evenly spaced labels,
+  // counted back from the latest year so it's always labeled.
+  const labelEvery = labelCaps ? 1 : Math.ceil(bars.length / 8);
 
   return (
     <figure className="flex flex-col gap-2">
@@ -87,7 +88,7 @@ export function BarChart({ title, bars, summary, columns }: BarChartProps) {
             key={bar.key}
             className="min-w-0 flex-1 text-center text-[11px] font-semibold text-muted"
           >
-            {i % labelEvery === 0 || i === bars.length - 1 ? bar.label : ""}
+            {(bars.length - 1 - i) % labelEvery === 0 ? bar.label : ""}
           </span>
         ))}
       </div>
