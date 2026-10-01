@@ -54,6 +54,13 @@ function addDays(iso: string, days: number): string {
   return d.toISOString().slice(0, 10);
 }
 
+// So What?! festival days per year, as filed on setlist.fm.
+const SO_WHAT_EDITIONS: Record<number, [string, string]> = {
+  2022: ["2022-05-27", "2022-05-29"],
+  2023: ["2023-06-24", "2023-06-25"],
+  2024: ["2024-06-01", "2024-06-02"],
+};
+
 const EMPIRE_POLO: FestivalSite = {
   search: { venueName: "Empire Polo", cityName: "Indio", stateCode: "CA" },
   grounds: venue("13d39d15", "Empire Polo Club", "Indio", "CA"),
@@ -211,6 +218,42 @@ export const FESTIVALS: Festival[] = [
     ],
     months: [6],
     isFestivalDate: inMonths(6),
+  },
+  {
+    name: "So What?! Music Festival",
+    aliases: ["so what", "so what music festival", "so what festival"],
+    // Moves around Dallas-Fort Worth. Earlier editions (to 2019) were club and ballpark
+    // shows that aren't listed; they still work through a venue-name search.
+    sites: [
+      {
+        fromYear: 2024,
+        search: { venueName: "Panther Island Pavilion", cityName: "Fort Worth", stateCode: "TX" },
+        grounds: venue("6bd716ea", "Panther Island Pavilion", "Fort Worth", "TX"),
+      },
+      {
+        fromYear: 2023,
+        toYear: 2023,
+        // Also matches "Music Hall at Fair Park"; the dates below keep its other shows out.
+        search: { venueName: "Fair Park", cityName: "Dallas", stateCode: "TX" },
+        grounds: venue("33d4d8f1", "Fair Park", "Dallas", "TX"),
+      },
+      {
+        fromYear: 2022,
+        toYear: 2022,
+        search: { venueName: "Choctaw Stadium", cityName: "Arlington", stateCode: "TX" },
+        grounds: venue("1bd01d54", "Choctaw Stadium", "Arlington", "TX"),
+      },
+    ],
+    months: [5, 6],
+    // Each grounds hosts other concerts, so known editions are matched by date. Later years
+    // fall back to late May or June.
+    isFestivalDate: (iso) => {
+      const edition = SO_WHAT_EDITIONS[year(iso)];
+      if (edition) return iso >= edition[0] && iso <= edition[1];
+      return (
+        year(iso) > 2024 && (month(iso) === 6 || (month(iso) === 5 && Number(iso.slice(8)) >= 20))
+      );
+    },
   },
 ];
 

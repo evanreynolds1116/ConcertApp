@@ -19,6 +19,8 @@ describe("findFestival", () => {
     ["newport jazz", "Newport Jazz Festival"],
     ["Riot Fest", "Riot Fest"],
     ["bottle rock", "BottleRock Napa Valley"],
+    ["So What", "So What?! Music Festival"],
+    ["so what?! 2024", "So What?! Music Festival"],
   ])("%s -> %s", (query, name) => {
     expect(findFestival(query)?.name).toBe(name);
   });
@@ -53,6 +55,17 @@ describe("festival dates", () => {
     expect(byName("Newport Folk Festival").isFestivalDate("2023-08-05")).toBe(false);
     expect(byName("Newport Jazz Festival").isFestivalDate("2023-08-05")).toBe(true);
   });
+
+  it("matches So What?! editions by date, not other shows at the same grounds", () => {
+    const soWhat = byName("So What?! Music Festival");
+    expect(soWhat.isFestivalDate("2024-06-01")).toBe(true);
+    expect(soWhat.isFestivalDate("2024-06-02")).toBe(true);
+    expect(soWhat.isFestivalDate("2024-06-15")).toBe(false);
+    expect(soWhat.isFestivalDate("2023-06-24")).toBe(true);
+    expect(soWhat.isFestivalDate("2023-07-26")).toBe(false);
+    expect(soWhat.isFestivalDate("2022-05-27")).toBe(true);
+    expect(soWhat.isFestivalDate("2027-06-05")).toBe(true); // unlisted later year: late May/June
+  });
 });
 
 describe("siteForYear", () => {
@@ -62,6 +75,10 @@ describe("siteForYear", () => {
     expect(siteForYear(govBall, 2023)?.grounds.name).toBe("Citi Field");
     expect(siteForYear(govBall, 2019)?.grounds.name).toBe("Randall's Island Park");
     expect(siteForYear(govBall)?.grounds.name).toBe("Flushing Meadows Corona Park");
+    const soWhat = byName("So What?! Music Festival");
+    expect(siteForYear(soWhat, 2024)?.grounds.name).toBe("Panther Island Pavilion");
+    expect(siteForYear(soWhat, 2023)?.grounds.name).toBe("Fair Park");
+    expect(siteForYear(soWhat, 2022)?.grounds.name).toBe("Choctaw Stadium");
   });
 
   it("returns nothing for years a listed site doesn't cover", () => {
