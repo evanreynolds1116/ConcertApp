@@ -1,0 +1,65 @@
+-- Shared helpers for the pgTAP tests. Included with \ir; not a test file itself (pg_prove only
+-- runs *.sql). Everything is created in pg_temp and disappears when the test's transaction
+-- rolls back.
+
+create extension if not exists pgtap with schema extensions;
+
+-- Seed user IDs by name (see supabase/seed.sql).
+create function pg_temp.uid(name text)
+returns uuid
+language sql
+immutable
+as $$
+  select case name
+    when 'pat' then '00000000-0000-4000-a000-000000000001'::uuid
+    when 'priya' then '00000000-0000-4000-a000-000000000002'::uuid
+    when 'fran' then '00000000-0000-4000-a000-000000000003'::uuid
+    when 'quinn' then '00000000-0000-4000-a000-000000000004'::uuid -- created by tests that need a 4th user
+  end;
+$$;
+
+-- Act as a signed-in user: the authenticated role plus JWT claims, as PostgREST would set them.
+create function pg_temp.as_user(name text)
+returns void
+language plpgsql
+as $$
+begin
+  reset role;
+  perform set_config('request.jwt.claims',
+    json_build_object('sub', pg_temp.uid(name), 'role', 'authenticated')::text, true);
+  set local role authenticated;
+end;
+$$;
+
+-- Act as a signed-out visitor.
+create function pg_temp.as_anon()
+returns void
+language plpgsql
+as $$
+begin
+  reset role;
+  perform set_config('request.jwt.claims', json_build_object('role', 'anon')::text, true);
+  set local role anon;
+end;
+$$;
+
+-- Back to the superuser (RLS bypassed) for setup and ground-truth checks.
+create function pg_temp.as_postgres()
+returns void
+language plpgsql
+as $$
+begin
+  reset role;
+  perform set_config('request.jwt.claims', '', true);
+end;
+$$;
+
+-- Create an extra private user (e.g. 'quinn') inside the test transaction.
+create function pg_temp.create_user(name text)
+returns void
+language sql
+as $$
+  insert into auth.users (instance_id, id, aud, role, email, raw_user_meta_data)
+  values ('00000000-0000-0000-0000-000000000000', pg_temp.uid(name), 'authenticated', 'authenticated',
+    name || '@example.com', jsonb_build_object('username', name || '_test', 'display_name', initcap(name)));
+$$;

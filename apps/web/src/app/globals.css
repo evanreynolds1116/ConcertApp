@@ -1,20 +1,42 @@
 @import "tailwindcss";
 
-/* Dark theme and accent from docs/mockups. */
+/* Dark theme from docs/mockups (colors sampled from the mockup files). */
 :root {
-  --background: #0b0d12;
-  --foreground: #f2f4f8;
+  --background: #121212;
+  --surface: #1e1e1e;
+  --surface-raised: #3a3a3a;
+  --border: #2a2a2a;
+  --foreground: #ffffff;
+  --muted: #b3b3b3;
+  --subtle: #8a8a8a;
   --accent: #5cc8ff;
+  --accent-hover: #8fdbff;
+  --on-accent: #06121a;
+  --danger: #ff7a7a; /* not in the mockups; ~7.4:1 on the background, ~6.6:1 on surfaces */
 }
 
 @theme inline {
   --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-raised: var(--surface-raised);
+  --color-border: var(--border);
   --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-subtle: var(--subtle);
   --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-on-accent: var(--on-accent);
+  --color-danger: var(--danger);
   --font-sans: var(--font-figtree);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
+  font-family: var(--font-figtree), system-ui, sans-serif;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
