@@ -1,13 +1,12 @@
 # Progress
 
-**Current phase:** Phase 1 built and tested; waiting on one sign-off (stats row, below). Next up: Phase 2.
+**Current phase:** Phase 1 done. Next up: Phase 2.
 **Last updated:** 2026-09-30
 
 ## Next step
 
-1. Confirm the Phase 1 sign-off question under "Open questions" (the "Stats and leaderboards" privacy row is tested in Phase 4).
-2. Decide the festival search approach (open question).
-3. Start Phase 2:
+1. Decide the festival search approach (open question).
+2. Start Phase 2:
    - the `setlist-search` Edge Function: search, lineup assembly, default ordering, month filter. Use the findings in `docs/setlistfm-notes.md`.
    - the `log_concert` function, written in the `private`/`public` grant style from Phase 1
    - the add-concert screens
@@ -36,7 +35,7 @@
 - [x] Seed data: 3 users (public, private, private-with-follower) with logs, lineups, follows and a pending request (`supabase/seed.sql`)
 - [x] Sign up, sign in, sign out, profile creation. The web uses `@supabase/ssr`, `src/proxy.ts` refreshes the session and redirects, and the pages check the viewer again.
 - [x] Settings page with the public/private toggle (plus sign out)
-- [ ] Done when: automated tests prove each row of the privacy table for all 3 seed users. **Met for every row except "Stats and leaderboards"**, whose functions don't exist until Phase 4 (see open questions). `pnpm test:db` runs 107 pgTAP assertions and 9 API smoke tests. A deliberately broken `can_view` makes 13 of them fail.
+- [x] Done when: automated tests prove each row of the privacy table for all 3 seed users. Every row is covered except "Stats and leaderboards", which moves to Phase 4 (accepted 2026-09-30). `pnpm test:db` runs 107 pgTAP assertions and 9 API smoke tests. A deliberately broken `can_view` makes 13 of them fail.
 
 ## Phase 2: Add concert
 
@@ -58,7 +57,8 @@
 
 ## Phase 4: Stats
 
-- [ ] `user_stats`, `leaderboard` and `stats_by_year` functions
+- [ ] `user_stats`, `leaderboard` and `stats_by_year` functions, written as `security invoker` (or checking `can_view`) so they respect privacy
+- [ ] Add the "Stats and leaderboards" row to the pgTAP privacy matrix (carried over from Phase 1)
 - [ ] Stats screen: five counts, money spent card, concerts per year and spend per year charts
 - [ ] Leaderboards: artists, venues, cities, states, each linking to a filtered log
 - [ ] Done when: stats match hand-counted seed data, including the Portland, OR / Portland, ME case
@@ -69,6 +69,7 @@
 - [ ] Follow / unfollow; requests (send, cancel, accept, decline)
 - [ ] Other users' profiles, including the locked private view
 - [ ] Activity feed
+- [ ] Settings: edit username, display name and avatar; delete account (moved here from the spec's Settings section, 2026-09-30)
 - [ ] Done when: two test accounts can go through every following rule and see the right things at each step
 
 ## Phase 6: Web polish and deploy
@@ -107,7 +108,7 @@ Record anything decided that isn't in the spec, with the date.
 - 2026-09-30 (Phase 1): RLS testing is pgTAP for the full privacy matrix and the following rules (`supabase/tests/database`), plus a small Vitest smoke suite through supabase-js with real sign-ins (`tests/api`). Both run with `pnpm test:db`; `pnpm test` stays unit-only and needs no Docker.
 - 2026-09-30 (Phase 1): Supabase's new publishable and secret keys (`sb_publishable_…` / `sb_secret_…`) instead of the legacy anon and service_role keys. The env names are `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_PUBLISHABLE_KEY` and `SUPABASE_SECRET_KEY`.
 - 2026-09-30 (Phase 1): Email confirmation stays off locally, so sign-up signs you straight in. Decide for the hosted project in Phase 6.
-- 2026-09-30 (Phase 1): Privacy details the spec didn't spell out:
+- 2026-09-30 (Phase 1): Privacy details the spec didn't spell out (confirmed by the user):
   - Pending follow requests are visible to the **sender** as well as the receiver. The sender needs this for the "Requested" button and to cancel.
   - An accepted follow row is visible when the viewer can view **either** side. So if a public user follows a private one, that shows on the public user's following list.
   - `artists`, `venues` and `shows` are shared reference data readable by every signed-in user. Clients can't write them; `log_concert` will (Phase 2).
@@ -123,15 +124,10 @@ Record anything decided that isn't in the spec, with the date.
   - Display names are 1–50 characters.
   - Passwords need at least 8 characters, in both `supabase/config.toml` and the shared Zod schema.
   - Usernames are checked case-insensitively (citext).
+- 2026-09-30: Phase 1 accepted with the "Stats and leaderboards" privacy row deferred to Phase 4. Editing profile details and deleting an account go in Phase 5.
 - 2026-09-30 (Phase 1): The auth site URL is `http://localhost:3000`. The web theme now uses the exact mockup colors. Error red (#ff7a7a) isn't in the mockups.
 
 **Open questions (to decide):**
-
-- **Phase 1 sign-off: the "Stats and leaderboards" privacy row.** The `user_stats`, `leaderboard` and `stats_by_year` functions are Phase 4 work, so that row can't be tested yet. Proposal:
-  - Accept Phase 1 as done now.
-  - In Phase 4, write those functions as `security invoker` (so they read through these RLS policies), or have them check `can_view` explicitly.
-  - Add their rows to the privacy matrix test then.
-- **Settings items with no phase.** The spec's Settings section also lists editing username, display name and avatar, and deleting an account. Only the privacy toggle is in Phase 1's checklist, and none of these appear in a later phase. Suggest Phase 5 (alongside profiles) or Phase 6. Account deletion already cascades correctly in the database (tested).
 
 - **Festival search (before Phase 2).** Two options:
   - Search `venueName=<festival name>` only, grouping results per day, and suggest searching the grounds (e.g. "Grant Park") when nothing matches.
