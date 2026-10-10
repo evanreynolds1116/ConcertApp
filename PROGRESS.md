@@ -1,14 +1,13 @@
 # Progress
 
 **Current phase:** Phase 5 done. Next up: Phase 6.
-**Last updated:** 2026-10-01
+**Last updated:** 2026-10-10
 
 ## Next step
 
 Start Phase 6 (Web polish and deploy):
 - Loading, empty and error states. Several empty states already exist; add `loading.tsx` / `error.tsx` per route group and a not-found page in the app's style.
 - Keyboard and screen reader pass, and phone-width layout across every screen.
-- setlist.fm attribution everywhere it's needed. The add-concert search and concert pages have it; check the feed and log cards against the spec.
 - Deploy:
   - create the hosted Supabase project (needs a Supabase account) and push the migrations
   - deploy `setlist-search` and set `SETLISTFM_API_KEY` as a secret
@@ -106,7 +105,7 @@ To use Add concert locally, run `pnpm functions:serve` alongside `pnpm dev`.
 
 - [ ] Loading, empty and error states
 - [ ] Keyboard and screen reader checks; phone-width layout
-- [ ] setlist.fm attribution everywhere it's needed
+- [x] setlist.fm attribution everywhere it's needed. Every signed-in page has a "Concert data from setlist.fm" footer (done 2026-10-10), and concert pages also link the headliner's setlist.
 - [ ] Deployed to Vercel against the hosted Supabase project
 
 ## Phase 7: Mobile app
@@ -228,6 +227,8 @@ Record anything decided that isn't in the spec, with the date.
   - each stop is one result, saved against its busiest stage, with no day label when it's a single day
   - placeholder venue names ("Parking Lot") are skipped when the stop has a real venue, so San Diego 2018 is saved as SDCCU Stadium
 - 2026-10-01 (manual testing): The concert page's "Lineup from setlist.fm" link goes to the headliner's own setlist at that show, approved by the user. Each lineup entry stores that artist's setlist link (`log_artists.setlistfm_url`, setlist.fm setlist pages only). Editing the lineup keeps the links, and the page falls back to the show's link when the headliner has none (for example, an artist added by hand). Existing local logs were backfilled from setlist.fm.
+- 2026-10-10: setlist.fm attribution is a footer on every signed-in page, from the `(app)` layout, rather than a credit on each card. setlist.fm's terms ask for attribution "wherever Setlist.fm data is used", and the log, feed, profiles and stats all show lineups and venues from it. The search screen's own credit line was removed because the footer covers it. The concert page keeps its "Lineup from setlist.fm" link to the headliner's setlist.
+- 2026-10-10: README screenshots (`docs/screenshots/`) show the user's own local account, at the user's choice. They're phone-width, 2× resolution, taken with headless Chrome.
 - 2026-10-01 (manual testing): Leaderboards show the top 10 rows with a "Show all" button, approved by the user. The spec says every item is listed; with 173 artists that made Stats very long. Ranks still count every row.
 
 **Open questions (to decide):**

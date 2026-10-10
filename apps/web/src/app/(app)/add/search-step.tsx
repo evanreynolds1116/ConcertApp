@@ -293,17 +293,6 @@ export function SearchStep({
             Add it manually
           </button>
         </p>
-        <p className="text-subtle">
-          Concert data from{" "}
-          <a
-            href="https://www.setlist.fm"
-            target="_blank"
-            rel="noreferrer"
-            className="text-accent hover:text-accent-hover"
-          >
-            setlist.fm
-          </a>
-        </p>
       </div>
     </div>
   );

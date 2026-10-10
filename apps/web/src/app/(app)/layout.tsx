@@ -30,6 +30,19 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         </nav>
       </header>
       <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-8">{children}</main>
+      {/* setlist.fm's API terms: attribution wherever its data is shown. Log cards, the feed,
+          profiles and stats all show lineups and venues that came from it. */}
+      <footer className="mx-auto w-full max-w-3xl px-4 pb-8 text-xs text-subtle">
+        Concert data from{" "}
+        <a
+          href="https://www.setlist.fm"
+          target="_blank"
+          rel="noreferrer"
+          className="text-accent hover:text-accent-hover"
+        >
+          setlist.fm
+        </a>
+      </footer>
     </>
   );
 }

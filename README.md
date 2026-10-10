@@ -6,6 +6,18 @@ Search [setlist.fm](https://www.setlist.fm) for a show, confirm the lineup, and 
 
 This is a personal and portfolio project. It covers US shows only, and the web app comes first. A React Native (Expo) app on the same backend is planned.
 
+## Screenshots
+
+These are phone-width views of the web app.
+
+| Your log | Adding a festival day | A concert | Profile |
+| :---: | :---: | :---: | :---: |
+| <img src="docs/screenshots/log.png" alt="The log: concerts newest first, with festival day labels and ratings" width="200"> | <img src="docs/screenshots/add-festival.png" alt="Festival search for Bonnaroo, one result per day" width="200"> | <img src="docs/screenshots/concert.png" alt="A Bonnaroo day's concert page with the full lineup" width="200"> | <img src="docs/screenshots/profile.png" alt="A profile with concert, follower and following counts" width="200"> |
+
+| Stats | Per-year charts | Leaderboards |
+| :---: | :---: | :---: |
+| <img src="docs/screenshots/stats.png" alt="Stats totals: concerts, artists, venues, cities, states and money spent" width="200"> | <img src="docs/screenshots/stats-charts.png" alt="Concerts and spend per year as bar charts" width="200"> | <img src="docs/screenshots/leaderboards.png" alt="The artist leaderboard, top 10 with Show all" width="200"> |
+
 ## Features
 
 - **Add a concert:** search setlist.fm by artist or venue, or by festival.
@@ -48,7 +60,7 @@ This is a personal and portfolio project. It covers US shows only, and the web a
 | `supabase/seed.sql` | Local seed data: three users, shows and follows |
 | `tests/` | Vitest tests for the Edge Function logic and the API |
 | `scripts/` | setlist.fm helper scripts |
-| `docs/` | The spec, mockups and setlist.fm notes |
+| `docs/` | The spec, mockups, screenshots and setlist.fm notes |
 
 ## Running it locally
 
@@ -158,7 +170,7 @@ The privacy tests were checked against deliberately broken rules: weakening `can
 
 Concert data comes from [setlist.fm](https://www.setlist.fm) through its free API, which is for non-commercial use only. The app follows setlist.fm's terms:
 
-- **Attribution:** pages that show setlist.fm data link back to setlist.fm. Concert pages link to the headliner's setlist.
+- **Attribution:** every signed-in page credits setlist.fm with a link, and concert pages link to the headliner's setlist on setlist.fm. None of the links are marked nofollow.
 - **API key:** only the Edge Function calls setlist.fm, and the key stays on the server.
 - **Storage:** search results are cached in memory for a few minutes and never saved. A log stores only what you confirmed (your lineup, the venue and the date) plus setlist.fm IDs and links. Song lists are never stored.
 
@@ -166,6 +178,6 @@ Commercial use would need permission from setlist.fm.
 
 ## Status
 
-Phases 0–5 of the build plan are done: setup, schema and privacy, adding concerts, the log, stats and social. Next is Phase 6: polish (loading and error states, accessibility, phone layouts, setlist.fm attribution on every screen) and deploying to hosted Supabase and Vercel. The mobile app is Phase 7.
+Phases 0–5 of the build plan are done: setup, schema and privacy, adding concerts, the log, stats and social. Next is the rest of Phase 6: polish (loading and error states, accessibility, phone layouts) and deploying to hosted Supabase and Vercel. Its setlist.fm attribution task is done. The mobile app is Phase 7.
 
 See [`PROGRESS.md`](PROGRESS.md) for where things stand and [`docs/spec.md`](docs/spec.md) for the full spec.
