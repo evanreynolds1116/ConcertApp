@@ -103,8 +103,8 @@ export function songCount(setlist: ApiSetlist): number {
 export function buildLineup(
   setlists: ApiSetlist[],
   searchedArtistMbid?: string | null,
-): LineupArtist[] {
-  const byArtist = new Map<string, LineupArtist>();
+): Omit<LineupArtist, "signature">[] {
+  const byArtist = new Map<string, Omit<LineupArtist, "signature">>();
   for (const s of setlists) {
     const key = s.artist.mbid || `name:${s.artist.name.toLowerCase()}`;
     const songs = songCount(s);

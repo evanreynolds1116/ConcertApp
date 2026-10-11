@@ -135,8 +135,10 @@ select throws_ok($$ select public.update_log('10000000-0000-4000-a000-0000000000
 create temp table new_logs (k text, id uuid) on commit drop;
 grant select, insert on new_logs to authenticated;
 select pg_temp.as_user('pat');
-insert into new_logs select 'fest', public.log_concert('setlistfm', '1999-09-18', '{"name":"Test Grounds","city":"Chicago","state":"IL"}',
-  '[{"name":"Test Band"}]', p_festival_name => 'Test Fest', p_festival_day_label => 'Weekend 2 · Day 1');
+insert into new_logs select 'fest', public.log_concert('setlistfm', '1999-09-18', v.j,
+  '[{"name":"Test Band"}]', p_festival_name => 'Test Fest', p_festival_day_label => 'Weekend 2 · Day 1',
+  p_show_signature => pg_temp.show_sig(v.j, '1999-09-18', 'Test Fest', 'Weekend 2 · Day 1'))
+from (select '{"name":"Test Grounds","city":"Chicago","state":"IL"}'::jsonb as j) v;
 insert into new_logs select 'club', public.log_concert('manual', '1999-09-19', '{"name":"Test Club","city":"Chicago","state":"IL"}',
   '[{"name":"Test Band"}]', p_festival_day_label => 'Day 9');
 select results_eq(

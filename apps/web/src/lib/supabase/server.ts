@@ -2,12 +2,13 @@ import "server-only";
 import { createServerClient } from "@supabase/ssr";
 import type { Database } from "@musicjunkie/shared";
 import { cookies } from "next/headers";
-import { supabasePublishableKey, supabaseUrl } from "./env";
+import { cookieOptions, supabasePublishableKey, supabaseUrl } from "./env";
 
 /** Supabase client for Server Components and Server Actions, acting as the signed-in user. */
 export async function createClient() {
   const cookieStore = await cookies();
   return createServerClient<Database>(supabaseUrl, supabasePublishableKey, {
+    cookieOptions,
     cookies: {
       getAll() {
         return cookieStore.getAll();

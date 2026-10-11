@@ -17,12 +17,13 @@ $$;
 
 select pg_temp.as_user('pat');
 insert into ids select 'show', public.log_concert(
-  'setlistfm', '1999-03-03',
-  '{"name": "Setlist Link Test Hall", "city": "Nashville", "state": "TN", "setlistfmId": "testlink1"}',
-  '[{"name": "Link Headliner", "setlistfmUrl": "https://www.setlist.fm/setlists/link-headliner-1.html", "setlistUrl": "https://www.setlist.fm/setlist/link-headliner/1999/hall-1.html"},
+  'setlistfm', '1999-03-03', v.j,
+  pg_temp.signed('[{"name": "Link Headliner", "setlistfmUrl": "https://www.setlist.fm/setlists/link-headliner-1.html", "setlistUrl": "https://www.setlist.fm/setlist/link-headliner/1999/hall-1.html"},
     {"name": "Link Opener", "setlistUrl": "https://www.setlist.fm/setlists/link-opener-2.html"},
     {"name": "Link Elsewhere", "setlistUrl": "https://example.com/setlist/x.html"},
-    {"name": "Link Nobody"}]');
+    {"name": "Link Nobody"}]', '1999-03-03'),
+  p_show_signature => pg_temp.show_sig(v.j, '1999-03-03'))
+from (select '{"name": "Setlist Link Test Hall", "city": "Nashville", "state": "TN", "setlistfmId": "testlink1"}'::jsonb as j) v;
 
 select is(pg_temp.links((select id from ids where name = 'show')),
   'Link Headliner=https://www.setlist.fm/setlist/link-headliner/1999/hall-1.html Link Opener=- Link Elsewhere=- Link Nobody=-',
@@ -49,21 +50,24 @@ select is(pg_temp.links((select id from ids where name = 'show')),
   'Link Opener=- Link Headliner=https://www.setlist.fm/setlist/link-headliner/1999/hall-1.html Link Added=-',
   'editing the lineup keeps each artist''s setlist link through reorders');
 
--- Direct writes can't store anything but a setlist.fm setlist page.
+-- Only log_concert and update_log set links (they carry over signed ones), and the column
+-- only ever holds a setlist.fm setlist page.
 select throws_ok(
   $$ update public.log_artists set setlistfm_url = 'https://www.setlist.fm/setlist/x.html'
      where log_id = (select id from ids where name = 'show') $$,
   '42501', null, 'clients cannot change a setlist link directly');
 select throws_ok(
   $$ insert into public.log_artists (log_id, artist_id, position, setlistfm_url)
+     select (select id from ids where name = 'manual'), id, 2, 'https://www.setlist.fm/setlist/link-opener/1999/hall-2.html'
+     from public.artists where name = 'Link Opener' $$,
+  '42501', null, 'or add a lineup row with a link of their choosing');
+select pg_temp.as_postgres();
+select throws_ok(
+  $$ insert into public.log_artists (log_id, artist_id, position, setlistfm_url)
      select (select id from ids where name = 'manual'), id, 2, 'https://example.com/setlist/x.html'
      from public.artists where name = 'Link Opener' $$,
   '23514', null, 'a link that isn''t a setlist.fm setlist page is rejected');
-select lives_ok(
-  $$ insert into public.log_artists (log_id, artist_id, position, setlistfm_url)
-     select (select id from ids where name = 'manual'), id, 2, 'https://www.setlist.fm/setlist/link-opener/1999/hall-2.html'
-     from public.artists where name = 'Link Opener' $$,
-  'an owner adding a lineup row may include a setlist.fm setlist link');
+select pg_temp.as_user('pat');
 
 -- Privacy: links are read through the same RLS as the rest of the lineup.
 select pg_temp.as_user('priya');

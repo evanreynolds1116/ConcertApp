@@ -44,7 +44,7 @@ export function ManualStep({ initial, onBack, onContinue }: ManualStepProps) {
       venue: { name: v.venueName, city: v.city, state: v.state, setlistfmId: null },
       festivalName: v.festivalName || null,
       festivalDayLabel: null,
-      setlistfmUrl: null,
+      showSignature: null,
       artists: [],
     });
   }

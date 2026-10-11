@@ -1,7 +1,7 @@
 # Progress
 
 **Current phase:** Phase 5 done. Next up: Phase 6.
-**Last updated:** 2026-10-10
+**Last updated:** 2026-10-11
 
 ## Next step
 
@@ -227,6 +227,21 @@ Record anything decided that isn't in the spec, with the date.
   - each stop is one result, saved against its busiest stage, with no day label when it's a single day
   - placeholder venue names ("Parking Lot") are skipped when the stop has a real venue, so San Diego 2018 is saved as SDCCU Stadium
 - 2026-10-01 (manual testing): The concert page's "Lineup from setlist.fm" link goes to the headliner's own setlist at that show, approved by the user. Each lineup entry stores that artist's setlist link (`log_artists.setlistfm_url`, setlist.fm setlist pages only). Editing the lineup keeps the links, and the page falls back to the show's link when the headliner has none (for example, an artist added by hand). Existing local logs were backfilled from setlist.fm.
+- 2026-10-11: Security audit (`SECURITY_AUDIT.md`). All 16 findings were fixed or documented, as approved by the user; the fix status and how each was re-checked are at the top of the report. The decisions:
+  - **Signed setlist.fm data:**
+    - `setlist-search` signs results and lineup artists; `log_concert` requires the signature for setlist.fm logs
+    - signed names replace stored ones
+    - `log_concert` lost `p_setlistfm_url`: the show link is the first signed artist's setlist
+  - **Search limits:** 30 a minute and 600 a day per user, with 2 at once.
+  - **Auth in the browser:**
+    - sign-in and sign-up run in the browser
+    - email confirmation is on, using `/auth/callback`
+    - passwords need at least 10 characters
+  - **Visibility:** shows, venues and artists are visible only through a log the viewer can see. `can_view` only answers for the signed-in viewer.
+  - **Account deletion:** needs the password (a fresh sign-in, checked in the database) and no avatar files left.
+  - **Avatars:** WebP only, with the file header checked on the server; readable by others only when a profile shows them.
+  - **Headers:** a nonce-based CSP plus security headers. The sign-out route only clears sessions without a profile.
+  - **Left for deploy:** CAPTCHA and leaked-password protection in the hosted project. A `deno.lock` needs Deno installed. `braces` has no patched release yet.
 - 2026-10-10: setlist.fm attribution is a footer on every signed-in page, from the `(app)` layout, rather than a credit on each card. setlist.fm's terms ask for attribution "wherever Setlist.fm data is used", and the log, feed, profiles and stats all show lineups and venues from it. The search screen's own credit line was removed because the footer covers it. The concert page keeps its "Lineup from setlist.fm" link to the headliner's setlist.
 - 2026-10-10: README screenshots (`docs/screenshots/`) show the user's own local account, at the user's choice. They're phone-width, 2× resolution, taken with headless Chrome.
 - 2026-10-01 (manual testing): Leaderboards show the top 10 rows with a "Show all" button, approved by the user. The spec says every item is listed; with 173 artists that made Stats very long. Ranks still count every row.

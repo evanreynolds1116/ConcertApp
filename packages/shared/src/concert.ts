@@ -185,6 +185,9 @@ export const draftArtistSchema = z.object({
   setlistfmUrl: z.string().max(500).nullable(),
   /** The artist's setlist at this show; the concert page links the headliner's. */
   setlistUrl: z.string().max(500).nullable(),
+  /** setlist-search's signature for this artist; without it the database ignores the MBID
+   * and links (an artist typed into the lineup editor has none). */
+  signature: z.string().max(128).nullable(),
 });
 export type DraftArtist = z.infer<typeof draftArtistSchema>;
 
@@ -203,7 +206,9 @@ export const concertDraftSchema = z.object({
   festivalName: z.string().trim().max(200).nullable(),
   /** "Day 3" or "Weekend 2 · Day 1", from the festival search. */
   festivalDayLabel: z.string().trim().max(40).nullable(),
-  setlistfmUrl: z.string().max(500).nullable(),
+  /** setlist-search's signature for the show (venue, date, festival); required for a
+   * setlist.fm log. */
+  showSignature: z.string().max(128).nullable(),
   artists: z.array(draftArtistSchema).min(1, { error: "Add at least one artist." }).max(200),
   ratingTenths: z.number().int().min(0).max(100).nullable(),
   ticketPriceCents: z.number().int().min(0).max(MAX_PRICE_CENTS).nullable(),

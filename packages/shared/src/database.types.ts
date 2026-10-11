@@ -300,6 +300,7 @@ export type Database = {
         }[];
       };
       can_view: { Args: { owner_id: string; viewer_id: string }; Returns: boolean };
+      consume_search_quota: { Args: { p_user_id: string }; Returns: boolean };
       delete_account: { Args: Record<PropertyKey, never>; Returns: undefined };
       feed: {
         Args: { p_before_created_at?: string; p_before_id?: string; p_limit?: number };
@@ -358,6 +359,7 @@ export type Database = {
           state: string;
         }[];
       };
+      lineup_signing_key: { Args: Record<PropertyKey, never>; Returns: string };
       log_concert: {
         Args: {
           p_artists: Json;
@@ -366,7 +368,7 @@ export type Database = {
           p_festival_name?: string;
           p_notes?: string;
           p_rating_tenths?: number;
-          p_setlistfm_url?: string;
+          p_show_signature?: string;
           p_source: string;
           p_ticket_price_cents?: number;
           p_venue: Json;

@@ -3,10 +3,21 @@
 import { useActionState } from "react";
 import { Field } from "@/components/field";
 import { SubmitButton } from "@/components/submit-button";
-import { signUp } from "../actions";
+import { signUp } from "../auth-client";
 
 export function SignUpForm() {
   const [state, action, pending] = useActionState(signUp, undefined);
+  if (state?.checkEmail) {
+    return (
+      <div role="status" className="rounded-xl bg-surface p-4">
+        <p className="font-bold">Check your email</p>
+        <p className="mt-1 text-sm text-muted">
+          If {state.values?.email} can be used for a new account, we&apos;ve sent it a link to
+          finish signing up.
+        </p>
+      </div>
+    );
+  }
   return (
     <form action={action} className="flex flex-col gap-4" noValidate>
       <Field
@@ -22,7 +33,7 @@ export function SignUpForm() {
         name="password"
         type="password"
         autoComplete="new-password"
-        hint="At least 8 characters."
+        hint="At least 10 characters."
         errors={state?.fieldErrors?.password}
       />
       <Field

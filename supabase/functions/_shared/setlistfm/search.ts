@@ -1,7 +1,8 @@
 import type { ApiSetlist, SetlistFmClient, SetlistQuery } from "./api.ts";
 import type {
-  ConcertResult,
-  FestivalDayResult,
+  ConcertResult as SignedConcertResult,
+  FestivalDayResult as SignedFestivalDayResult,
+  LineupArtist,
   LineupRequest,
   LineupResponse,
   LineupTarget,
@@ -11,6 +12,7 @@ import type {
   UsVenue,
 } from "./contract.ts";
 import { type Festival, findFestival, siteForYear } from "./festivals.ts";
+import { type Signer, signArtist, signResult } from "./signing.ts";
 import {
   buildLineup,
   songCount,
@@ -36,6 +38,12 @@ const GENERIC_VENUE =
   /^(the )?(parking lot|lot|grounds|main stage|side stage|stage|tba|tbd|unknown( venue)?)$/i;
 
 type Ctx = { client: SetlistFmClient; now: number };
+// Results are built unsigned; handle() adds setlist-search's signatures before they're sent.
+type ConcertResult = Omit<SignedConcertResult, "signature">;
+type FestivalDayResult = Omit<SignedFestivalDayResult, "signature">;
+type UnsignedLineup = Omit<LineupResponse, "artists"> & {
+  artists: Omit<LineupArtist, "signature">[];
+};
 type ConcertSearchResponse = Omit<SearchResponse, "results"> & { results: ConcertResult[] };
 type FestivalSearchResponse = Omit<SearchResponse, "results"> & { results: FestivalDayResult[] };
 
@@ -487,7 +495,7 @@ function daysBetween(a: string, b: string): number {
 // Lineup: every setlist for the show, as one ordered list of artists
 // ---------------------------------------------------------------------------------------------
 
-export async function getLineup(ctx: Ctx, req: LineupRequest): Promise<LineupResponse> {
+export async function getLineup(ctx: Ctx, req: LineupRequest): Promise<UnsignedLineup> {
   const t = req.target;
   const queries: SetlistQuery[] =
     t.kind === "venue"
@@ -517,11 +525,20 @@ export async function getLineup(ctx: Ctx, req: LineupRequest): Promise<LineupRes
   return { artists, setlistfmUrl: leadSetlist?.url ?? null };
 }
 
-/** Runs a validated request. */
-export function handle(
-  ctx: Ctx,
+/** Runs a validated request and signs what it returns (see signing.ts). */
+export async function handle(
+  ctx: Ctx & { sign: Signer },
   req: SetlistSearchRequest,
 ): Promise<SearchResponse | LineupResponse> {
-  if (req.action === "lineup") return getLineup(ctx, req);
-  return req.mode === "festival" ? searchFestivalDays(ctx, req) : searchConcerts(ctx, req);
+  if (req.action === "lineup") {
+    const lineup = await getLineup(ctx, req);
+    const artists = await Promise.all(lineup.artists.map((a) => signArtist(a, req.date, ctx.sign)));
+    return { ...lineup, artists };
+  }
+  const found =
+    req.mode === "festival" ? await searchFestivalDays(ctx, req) : await searchConcerts(ctx, req);
+  const results = await Promise.all(
+    (found.results as (ConcertResult | FestivalDayResult)[]).map((r) => signResult(r, ctx.sign)),
+  );
+  return { ...found, results };
 }

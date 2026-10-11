@@ -167,9 +167,30 @@ export function AvatarEditor({
 export function DeleteAccount({ username }: { username: string }) {
   const dialog = useRef<HTMLDialogElement>(null);
   const [typed, setTyped] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [deleting, startDeleting] = useTransition();
-  const matches = typed.trim().toLowerCase() === username.toLowerCase();
+  const matches = typed.trim().toLowerCase() === username.toLowerCase() && password !== "";
+
+  function confirmDelete() {
+    setError(null);
+    startDeleting(async () => {
+      // Sign in again with the password: the database only deletes an account after a recent
+      // password sign-in.
+      const supabase = getBrowserClient();
+      const { data } = await supabase.auth.getUser();
+      const email = data.user?.email;
+      const { error: authError } = email
+        ? await supabase.auth.signInWithPassword({ email, password })
+        : { error: new Error("no email") };
+      if (authError) {
+        setError("That password isn't right.");
+        return;
+      }
+      const result = await deleteAccount(typed);
+      if (result?.error) setError(result.error);
+    });
+  }
 
   return (
     <>
@@ -203,6 +224,17 @@ export function DeleteAccount({ username }: { username: string }) {
           onChange={(e) => setTyped(e.target.value)}
           className="mt-1.5 h-11 w-full rounded-lg border border-surface-raised bg-background px-3 outline-none focus:border-danger"
         />
+        <label htmlFor="confirm-password" className="mt-4 block text-sm font-semibold">
+          Your password
+        </label>
+        <input
+          id="confirm-password"
+          type="password"
+          autoComplete="current-password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          className="mt-1.5 h-11 w-full rounded-lg border border-surface-raised bg-background px-3 outline-none focus:border-danger"
+        />
         {error && (
           <p role="alert" className="mt-2 text-sm text-danger">
             {error}
@@ -220,12 +252,7 @@ export function DeleteAccount({ username }: { username: string }) {
           <button
             type="button"
             disabled={!matches || deleting}
-            onClick={() =>
-              startDeleting(async () => {
-                const result = await deleteAccount(typed);
-                if (result?.error) setError(result.error);
-              })
-            }
+            onClick={confirmDelete}
             className="h-11 flex-1 rounded-full bg-danger font-bold text-background disabled:opacity-40"
           >
             {deleting ? "Deleting…" : "Delete forever"}

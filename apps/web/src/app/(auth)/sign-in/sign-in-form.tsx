@@ -3,7 +3,7 @@
 import { useActionState } from "react";
 import { Field } from "@/components/field";
 import { SubmitButton } from "@/components/submit-button";
-import { signIn } from "../actions";
+import { signIn } from "../auth-client";
 
 export function SignInForm({ next }: { next?: string }) {
   const [state, action, pending] = useActionState(signIn, undefined);

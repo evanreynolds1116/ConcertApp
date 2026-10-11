@@ -169,14 +169,14 @@ export function SearchStep({
         },
         festivalName: result.kind === "festival-day" ? result.festivalName : null,
         festivalDayLabel: result.kind === "festival-day" ? result.dayLabel || null : null,
-        setlistfmUrl:
-          lineup.setlistfmUrl ?? (result.kind === "concert" ? result.setlistfmUrl : null),
+        showSignature: result.signature,
         artists: lineup.artists.map((a) =>
           lineupRow({
             name: a.name,
             mbid: a.mbid,
             setlistfmUrl: a.setlistfmUrl,
             setlistUrl: a.setlistUrl,
+            signature: a.signature,
           }),
         ),
       });

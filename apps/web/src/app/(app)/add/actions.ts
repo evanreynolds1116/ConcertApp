@@ -19,15 +19,16 @@ export async function saveConcert(input: unknown): Promise<SaveResult> {
     p_source: d.source,
     p_date: d.date,
     p_venue: d.venue,
-    p_artists: d.artists.map(({ name, mbid, setlistfmUrl, setlistUrl }) => ({
+    p_artists: d.artists.map(({ name, mbid, setlistfmUrl, setlistUrl, signature }) => ({
       name,
       mbid,
       setlistfmUrl,
       setlistUrl,
+      signature,
     })),
     p_festival_name: d.festivalName ?? undefined,
     p_festival_day_label: d.festivalDayLabel ?? undefined,
-    p_setlistfm_url: d.setlistfmUrl ?? undefined,
+    p_show_signature: d.showSignature ?? undefined,
     p_rating_tenths: d.ratingTenths ?? undefined,
     p_ticket_price_cents: d.ticketPriceCents ?? undefined,
     p_notes: d.notes || undefined,
@@ -38,6 +39,9 @@ export async function saveConcert(input: unknown): Promise<SaveResult> {
       return { duplicateLogId: error.details };
     }
     console.error("log_concert failed", error.code, error.message);
+    // The search result's signature didn't check out (e.g. it's from before a local db:reset).
+    if (error.message.startsWith("setlist.fm details could not be verified"))
+      return { error: "This search result has expired. Please search again." };
     return { error: "Couldn't save this concert. Please try again." };
   }
 

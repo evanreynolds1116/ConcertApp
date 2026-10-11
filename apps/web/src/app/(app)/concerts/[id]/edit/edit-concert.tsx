@@ -30,7 +30,14 @@ type EditConcertProps = {
 export function EditConcert({ logId, show, lineup, log }: EditConcertProps) {
   const [rows, setRows] = useState<LineupRow[]>(() =>
     lineup.map((a) =>
-      lineupRow({ name: a.name, mbid: null, setlistfmUrl: null, setlistUrl: null, artistId: a.id }),
+      lineupRow({
+        name: a.name,
+        mbid: null,
+        setlistfmUrl: null,
+        setlistUrl: null,
+        signature: null,
+        artistId: a.id,
+      }),
     ),
   );
   const [details, setDetails] = useState<Details>(() => detailsFromLog(log));

@@ -30,6 +30,8 @@ export type ConcertResult = {
   artistMbid: string | null;
   setlistfmUrl: string;
   target: LineupTarget;
+  /** setlist-search's signature over the venue and date; log_concert requires it. */
+  signature: string;
 };
 
 export type FestivalDayResult = {
@@ -44,6 +46,8 @@ export type FestivalDayResult = {
   dayLabel: string;
   artistCount: number;
   target: LineupTarget;
+  /** setlist-search's signature over the venue, date, festival name and day label. */
+  signature: string;
 };
 
 export type SearchResult = ConcertResult | FestivalDayResult;
@@ -83,6 +87,9 @@ export type LineupArtist = {
   /** The artist's setlist at this show. */
   setlistUrl: string | null;
   songCount: number;
+  /** setlist-search's signature over the MBID, name, links and date; log_concert keeps the
+   * MBID and links only with it. */
+  signature: string;
 };
 
 export type LineupResponse = {

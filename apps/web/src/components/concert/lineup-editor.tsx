@@ -29,6 +29,8 @@ export type LineupRow = {
   mbid: string | null;
   setlistfmUrl: string | null;
   setlistUrl: string | null;
+  /** setlist-search's signature (rows from setlist.fm only). */
+  signature: string | null;
   artistId?: string;
 };
 
@@ -69,7 +71,10 @@ export function LineupEditor({ rows, onChange }: LineupEditorProps) {
       setAddError(`${name} is already in the lineup.`);
       return;
     }
-    onChange([...rows, lineupRow({ name, mbid: null, setlistfmUrl: null, setlistUrl: null })]);
+    onChange([
+      ...rows,
+      lineupRow({ name, mbid: null, setlistfmUrl: null, setlistUrl: null, signature: null }),
+    ]);
     setNewName("");
     setAddError(null);
   }

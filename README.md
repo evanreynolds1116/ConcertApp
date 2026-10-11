@@ -36,6 +36,12 @@ These are phone-width views of the web app.
   - other people's profiles, logs and stats
   - an activity feed
 - **Privacy:** enforced in the database, not just the UI. Every read goes through one rule, `can_view(viewer, owner)`, applied by Postgres row-level security and covered by tests.
+- **Security:** audited in [`SECURITY_AUDIT.md`](SECURITY_AUDIT.md), with all findings addressed:
+  - signed setlist.fm data, so nobody can plant venue or artist names
+  - per-user search limits
+  - a strict Content-Security-Policy
+  - email confirmation
+  - password re-entry to delete an account
 
 ## Stack
 
@@ -119,7 +125,7 @@ In a second terminal (needed for Add concert):
 pnpm functions:serve
 ```
 
-Open http://localhost:3000. Sign up with any email (no confirmation email is sent locally), or use a seed account:
+Open http://localhost:3000. Sign up with any email: the confirmation email lands in the local email testing server at http://127.0.0.1:54324, so open it there and click the link. Or use a seed account:
 
 - `pat@example.com` (public)
 - `priya@example.com` (private)
@@ -135,7 +141,9 @@ Press Ctrl+C in both terminals, then stop Supabase:
 pnpm db:stop
 ```
 
-Your local data is kept, and `pnpm db:start` brings it back. If `pnpm db:stop` fails on Windows with a `uv_spawn` error, stopping the `music-junkie` containers in Docker Desktop does the same thing.
+Your local data is kept, and `pnpm db:start` brings it back.
+
+**Deploying:** never run `supabase db reset --linked` or seed the hosted project. The seed accounts' password is public. In the hosted Supabase project, also turn on CAPTCHA (Turnstile or hCaptcha) and leaked-password protection. If `pnpm db:stop` fails on Windows with a `uv_spawn` error, stopping the `music-junkie` containers in Docker Desktop does the same thing.
 
 ## Commands
 
@@ -159,10 +167,10 @@ Run these from the repo root.
 
 ## Tests
 
-- **`pnpm test`:** 136 Vitest tests. They cover the shared helpers and the Edge Function's search, festival and lineup logic, using a fake setlist.fm client.
+- **`pnpm test`:** 157 Vitest tests. They cover the shared helpers, the safe-redirect check, and the Edge Function's search, festival, lineup and signing logic, using a fake setlist.fm client.
 - **`pnpm test:db`:**
-  - **236 pgTAP assertions:** the privacy rules for every combination of viewer and owner, following rules, writes and constraints, logging, stats, social features and setlist links.
-  - **23 API smoke tests:** the same rules checked through Supabase's API.
+  - **262 pgTAP assertions:** the privacy rules for every combination of viewer and owner, following rules, writes and constraints, logging, stats, social features, setlist links and the security fixes.
+  - **25 API smoke tests:** the same rules checked through Supabase's API.
 
 The privacy tests were checked against deliberately broken rules: weakening `can_view` makes them fail.
 

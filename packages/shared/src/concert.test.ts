@@ -94,8 +94,16 @@ describe("concertDraftSchema", () => {
     venue: { name: "Hollywood Bowl", city: "Los Angeles", state: "CA", setlistfmId: "33d62cf9" },
     festivalName: null,
     festivalDayLabel: null,
-    setlistfmUrl: "https://www.setlist.fm/setlist/x.html",
-    artists: [{ name: "boygenius", mbid: "3ceeddbd", setlistfmUrl: null, setlistUrl: null }],
+    showSignature: "a1b2",
+    artists: [
+      {
+        name: "boygenius",
+        mbid: "3ceeddbd",
+        setlistfmUrl: null,
+        setlistUrl: null,
+        signature: null,
+      },
+    ],
     ratingTenths: 0,
     ticketPriceCents: 0,
     notes: "",

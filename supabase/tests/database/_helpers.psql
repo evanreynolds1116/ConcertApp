@@ -63,3 +63,44 @@ as $$
   values ('00000000-0000-0000-0000-000000000000', pg_temp.uid(name), 'authenticated', 'authenticated',
     name || '@example.com', jsonb_build_object('username', name || '_test', 'display_name', initcap(name)));
 $$;
+
+-- Sign setlist.fm details the way the setlist-search Edge Function does (SECURITY_AUDIT.md,
+-- M1), so a test can log a concert "from setlist.fm". Security definer: they read the signing
+-- key whatever role the test is acting as.
+create function pg_temp.show_sig(venue jsonb, show_date date, festival text default null, day_label text default null)
+returns text
+language sql
+security definer
+as $$
+  select private.lineup_signature('show', array[
+    venue ->> 'setlistfmId', venue ->> 'name', venue ->> 'city', upper(venue ->> 'state'),
+    show_date::text, festival, case when festival is not null then day_label end
+  ]);
+$$;
+
+create function pg_temp.signed(artists jsonb, show_date date)
+returns jsonb
+language sql
+security definer
+as $$
+  select coalesce(jsonb_agg(a || jsonb_build_object('signature', private.lineup_signature('artist', array[
+    a ->> 'mbid', a ->> 'name', a ->> 'setlistfmUrl', a ->> 'setlistUrl', show_date::text
+  ])) order by i), '[]'::jsonb)
+  from jsonb_array_elements(artists) with ordinality as t(a, i);
+$$;
+
+-- Act as a user who signed in with their password just now (the JWT's amr claim), which
+-- delete_account requires.
+create function pg_temp.as_user_just_signed_in(name text)
+returns void
+language plpgsql
+as $$
+begin
+  reset role;
+  perform set_config('request.jwt.claims', json_build_object(
+    'sub', pg_temp.uid(name), 'role', 'authenticated',
+    'amr', json_build_array(json_build_object('method', 'password', 'timestamp', extract(epoch from now())::bigint))
+  )::text, true);
+  set local role authenticated;
+end;
+$$;

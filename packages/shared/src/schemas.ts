@@ -21,7 +21,7 @@ export const emailSchema = z
   .trim()
   .pipe(z.email({ error: "Enter a valid email address." }));
 
-export const passwordSchema = z.string().min(8, { error: "Use at least 8 characters." });
+export const passwordSchema = z.string().min(10, { error: "Use at least 10 characters." });
 
 export const signUpSchema = z.object({
   email: emailSchema,

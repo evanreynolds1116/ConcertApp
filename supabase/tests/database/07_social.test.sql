@@ -4,7 +4,7 @@
 
 begin;
 \ir _helpers.psql
-select plan(31);
+select plan(32);
 
 -- ---------------------------------------------------------------------------------------------
 -- search_people
@@ -150,6 +150,9 @@ select is_empty($$ select * from storage.objects where bucket_id = 'avatars' $$,
 -- delete_account
 -- ---------------------------------------------------------------------------------------------
 select pg_temp.as_user('fran');
+select throws_ok($$ select public.delete_account() $$, '42501', null,
+  'deleting an account needs a password sign-in in the last few minutes');
+select pg_temp.as_user_just_signed_in('fran');
 select lives_ok($$ select public.delete_account() $$, 'fran deletes her account');
 select pg_temp.as_postgres();
 select is(

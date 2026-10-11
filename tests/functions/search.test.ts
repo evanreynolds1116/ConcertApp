@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
-import type { FestivalDayResult } from "../../supabase/functions/_shared/setlistfm/contract.ts";
+import type { FestivalDayResult as SignedFestivalDayResult } from "../../supabase/functions/_shared/setlistfm/contract.ts";
+
+type FestivalDayResult = Omit<SignedFestivalDayResult, "signature">;
 import {
   BadRequest,
   getLineup,

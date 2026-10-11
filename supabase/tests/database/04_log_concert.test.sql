@@ -42,13 +42,13 @@ select throws_ok($$ select public.log_concert('manual', '2024-01-01', '{"name":"
 
 select pg_temp.as_user('pat');
 insert into ids select 'pat_basement', public.log_concert(
-  'setlistfm', '2026-09-17',
-  '{"name": "The Basement East", "city": "Nashville", "state": "TN", "setlistfmId": "23d09c67"}',
-  '[{"name": "Shakey Graves", "mbid": "24ca022c-653e-4379-812a-71f729b900ef", "setlistfmUrl": "https://www.setlist.fm/setlists/shakey-graves-2bd6d8ae.html"},
+  'setlistfm', '2026-09-17', v.j,
+  pg_temp.signed('[{"name": "Shakey Graves", "mbid": "24ca022c-653e-4379-812a-71f729b900ef", "setlistfmUrl": "https://www.setlist.fm/setlists/shakey-graves-2bd6d8ae.html"},
     {"name": "Futurebirds", "mbid": "e432ac6d-fc48-436a-bbee-3f112902f6ae"},
-    {"name": "Langhorne Slim", "mbid": "0bc5259b-bf08-40ad-9f6a-20462f652e83"}]',
-  p_setlistfm_url => 'https://www.setlist.fm/setlist/shakey-graves/2026/the-basement-east-nashville-tn-1.html',
-  p_rating_tenths => 87::smallint, p_ticket_price_cents => 3500);
+    {"name": "Langhorne Slim", "mbid": "0bc5259b-bf08-40ad-9f6a-20462f652e83"}]', '2026-09-17'),
+  p_rating_tenths => 87::smallint, p_ticket_price_cents => 3500,
+  p_show_signature => pg_temp.show_sig(v.j, '2026-09-17'))
+from (select '{"name": "The Basement East", "city": "Nashville", "state": "TN", "setlistfmId": "23d09c67"}'::jsonb as j) v;
 
 select pg_temp.as_postgres();
 select results_eq(
@@ -72,7 +72,8 @@ select is((select count(*)::int from public.activities where log_id = pg_temp.id
 -- ---------------------------------------------------------------------------------------------
 select pg_temp.as_user('pat');
 select is(
-  pg_temp.error_of($$ select public.log_concert('setlistfm', '2026-09-17', '{"name":"The Basement East","city":"Nashville","state":"TN","setlistfmId":"23d09c67"}', '[{"name":"Futurebirds"}]') $$),
+  pg_temp.error_of($$ select public.log_concert('setlistfm', '2026-09-17', '{"name":"The Basement East","city":"Nashville","state":"TN","setlistfmId":"23d09c67"}', '[{"name":"Futurebirds"}]',
+    p_show_signature => pg_temp.show_sig('{"name":"The Basement East","city":"Nashville","state":"TN","setlistfmId":"23d09c67"}', '2026-09-17')) $$),
   '23505: already_logged | ' || pg_temp.id('pat_basement'),
   'logging the same show twice is blocked, and the error carries the existing log''s id'
 );
@@ -112,8 +113,10 @@ select is((select count(*)::int from public.artists where lower(name) = 'test ba
 
 -- A setlist.fm log adopts a venue someone added by hand (Crystal Ballroom, Portland, OR).
 select pg_temp.as_user('priya');
-insert into ids select 'priya_crystal', public.log_concert('setlistfm', '1999-04-01',
-  '{"name":"Crystal Ballroom","city":"Portland","state":"OR","setlistfmId":"cb000001"}', '[{"name":"Test Band Beta","mbid":"mbid-test-band-beta"}]');
+insert into ids select 'priya_crystal', public.log_concert('setlistfm', '1999-04-01', v.j,
+  pg_temp.signed('[{"name":"Test Band Beta","mbid":"mbid-test-band-beta"}]', '1999-04-01'),
+  p_show_signature => pg_temp.show_sig(v.j, '1999-04-01'))
+from (select '{"name":"Crystal Ballroom","city":"Portland","state":"OR","setlistfmId":"cb000001"}'::jsonb as j) v;
 select pg_temp.as_postgres();
 select results_eq(
   $$ select id, setlistfm_venue_id from public.venues where lower(name) = 'crystal ballroom' $$,
@@ -122,8 +125,10 @@ select results_eq(
 );
 -- And a setlist.fm artist adopts a manually added twin.
 select pg_temp.as_user('pat');
-insert into ids select 'pat_bnb', public.log_concert('setlistfm', '1999-03-02',
-  '{"name":"Test Hall One","city":"Durham","state":"NC"}', '[{"name":"Test Band Alpha","mbid":"mbid-test-band-alpha"}]');
+insert into ids select 'pat_bnb', public.log_concert('setlistfm', '1999-03-02', v.j,
+  pg_temp.signed('[{"name":"Test Band Alpha","mbid":"mbid-test-band-alpha"}]', '1999-03-02'),
+  p_show_signature => pg_temp.show_sig(v.j, '1999-03-02'))
+from (select '{"name":"Test Hall One","city":"Durham","state":"NC"}'::jsonb as j) v;
 select pg_temp.as_postgres();
 select results_eq(
   $$ select count(*)::int, max(mbid) from public.artists where lower(name) = 'test band alpha' $$,
@@ -136,12 +141,15 @@ select results_eq(
 -- ---------------------------------------------------------------------------------------------
 -- Riot Fest: stages are separate setlist.fm venues, so the day is saved against the grounds.
 select pg_temp.as_user('pat');
-insert into ids select 'pat_riot', public.log_concert('setlistfm', '1999-09-18',
-  '{"name":"Douglass Park","city":"Chicago","state":"IL","setlistfmId":null}',
-  '[{"name":"Test Band Gamma","mbid":"mbid-test-gamma"},{"name":"Test Band Delta","mbid":"mbid-test-delta"}]', p_festival_name => 'Riot Fest');
+insert into ids select 'pat_riot', public.log_concert('setlistfm', '1999-09-18', v.j,
+  pg_temp.signed('[{"name":"Test Band Gamma","mbid":"mbid-test-gamma"},{"name":"Test Band Delta","mbid":"mbid-test-delta"}]', '1999-09-18'),
+  p_festival_name => 'Riot Fest', p_show_signature => pg_temp.show_sig(v.j, '1999-09-18', 'Riot Fest'))
+from (select '{"name":"Douglass Park","city":"Chicago","state":"IL","setlistfmId":null}'::jsonb as j) v;
 select pg_temp.as_user('fran');
-insert into ids select 'fran_riot', public.log_concert('setlistfm', '1999-09-18',
-  '{"name":"Douglass Park","city":"Chicago","state":"IL"}', '[{"name":"Test Band Delta","mbid":"mbid-test-delta"}]', p_festival_name => 'Riot Fest');
+insert into ids select 'fran_riot', public.log_concert('setlistfm', '1999-09-18', v.j,
+  pg_temp.signed('[{"name":"Test Band Delta","mbid":"mbid-test-delta"}]', '1999-09-18'),
+  p_festival_name => 'Riot Fest', p_show_signature => pg_temp.show_sig(v.j, '1999-09-18', 'Riot Fest'))
+from (select '{"name":"Douglass Park","city":"Chicago","state":"IL"}'::jsonb as j) v;
 select pg_temp.as_postgres();
 select results_eq(
   $$ select count(distinct l.show_id)::int, max(s.festival_name) from public.concert_logs l join public.shows s on s.id = l.show_id
@@ -151,9 +159,10 @@ select results_eq(
 );
 -- Bonnaroo day (seed show) logged by priya: same show as pat and fran.
 select pg_temp.as_user('priya');
-insert into ids select 'priya_roo', public.log_concert('setlistfm', '2024-06-16',
-  '{"name":"Great Stage Park","city":"Manchester","state":"TN","setlistfmId":"2bd6181e"}', '[{"name":"Chappell Roan","mbid":"56a55378-f155-48de-80a5-d80104221267"}]',
-  p_festival_name => 'Bonnaroo');
+insert into ids select 'priya_roo', public.log_concert('setlistfm', '2024-06-16', v.j,
+  pg_temp.signed('[{"name":"Chappell Roan","mbid":"56a55378-f155-48de-80a5-d80104221267"}]', '2024-06-16'),
+  p_festival_name => 'Bonnaroo', p_show_signature => pg_temp.show_sig(v.j, '2024-06-16', 'Bonnaroo'))
+from (select '{"name":"Great Stage Park","city":"Manchester","state":"TN","setlistfmId":"2bd6181e"}'::jsonb as j) v;
 select pg_temp.as_postgres();
 select is((select show_id from public.concert_logs where id = pg_temp.id('priya_roo')), '30000000-0000-4000-a000-000000000005'::uuid,
   'a festival day from setlist.fm joins the existing show');
@@ -198,9 +207,12 @@ select results_eq(
 
 -- Manual logs never carry setlist.fm IDs or links, and only real setlist.fm links are kept.
 insert into ids select 'pat_links', public.log_concert('manual', '2024-02-03', '{"name":"V3","city":"C","state":"TN","setlistfmId":"fake"}',
-  '[{"name":"B","mbid":"fake-mbid"}]', p_setlistfm_url => 'https://www.setlist.fm/setlist/x.html');
-insert into ids select 'pat_badlink', public.log_concert('setlistfm', '2024-02-04', '{"name":"V4","city":"C","state":"TN","setlistfmId":"v4id"}',
-  '[{"name":"C","mbid":"mbid-c","setlistfmUrl":"javascript:alert(1)"}]', p_setlistfm_url => 'https://evil.example/setlist.fm');
+  '[{"name":"B","mbid":"fake-mbid","setlistUrl":"https://www.setlist.fm/setlist/x.html"}]');
+-- Even correctly signed, links that aren't setlist.fm pages are dropped.
+insert into ids select 'pat_badlink', public.log_concert('setlistfm', '2024-02-04', v.j,
+  pg_temp.signed('[{"name":"C","mbid":"mbid-c","setlistfmUrl":"javascript:alert(1)","setlistUrl":"https://evil.example/setlist.fm"}]', '2024-02-04'),
+  p_show_signature => pg_temp.show_sig(v.j, '2024-02-04'))
+from (select '{"name":"V4","city":"C","state":"TN","setlistfmId":"v4id"}'::jsonb as j) v;
 select pg_temp.as_postgres();
 select results_eq(
   $$ select v.setlistfm_venue_id, s.setlistfm_url, a.mbid from public.concert_logs l join public.shows s on s.id = l.show_id

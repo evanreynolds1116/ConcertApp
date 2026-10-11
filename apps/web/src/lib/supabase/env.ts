@@ -15,3 +15,10 @@ export const supabasePublishableKey = required(
   "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY",
   process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
 );
+
+/**
+ * Session cookie options. Secure in production (HTTPS only). They can't be httpOnly: the
+ * browser client reads them for sign-in and avatar uploads. The Content-Security-Policy in
+ * proxy.ts limits what a script injected into the page could do.
+ */
+export const cookieOptions = { secure: process.env.NODE_ENV === "production" };
