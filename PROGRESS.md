@@ -12,7 +12,15 @@ Start Phase 6 (Web polish and deploy):
   - create the hosted Supabase project (needs a Supabase account) and push the migrations
   - deploy `setlist-search` and set `SETLISTFM_API_KEY` as a secret
   - deploy the web app to Vercel
-  - decide on email confirmation for the hosted project
+  - hosted auth settings (see `SECURITY_AUDIT.md`, Fix status):
+    - make sure email confirmation is on (it's on in `config.toml`)
+    - set the site URL and add `<site>/auth/callback` to the redirect URLs
+    - require at least 10-character passwords
+    - turn on CAPTCHA (Cloudflare Turnstile or hCaptcha): needs provider keys from you, then wire the widget into sign-in and sign-up
+    - turn on leaked-password protection
+  - never run `supabase db reset --linked` or seed the hosted project (the seed password is public)
+  - after deploying, check the security headers and HSTS on the real domain
+  - optional: commit a `deno.lock` for the Edge Function (needs the Deno CLI; ask before installing)
 - Decide whether to add Playwright end-to-end tests (needs a browser download; ask first).
 
 To use Add concert locally, run `pnpm functions:serve` alongside `pnpm dev`.
@@ -107,6 +115,7 @@ To use Add concert locally, run `pnpm functions:serve` alongside `pnpm dev`.
 - [ ] Keyboard and screen reader checks; phone-width layout
 - [x] setlist.fm attribution everywhere it's needed. Every signed-in page has a "Concert data from setlist.fm" footer (done 2026-10-10), and concert pages also link the headliner's setlist.
 - [ ] Deployed to Vercel against the hosted Supabase project
+- [ ] Hosted auth hardened: email confirmation and redirect URLs, 10-character passwords, CAPTCHA, leaked-password protection
 
 ## Phase 7: Mobile app
 
